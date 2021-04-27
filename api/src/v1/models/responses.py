@@ -1,0 +1,57 @@
+from enum import Enum
+from typing import Any, Optional, List
+
+from pydantic import BaseModel
+
+from .golf_club import GolfClub
+from .golf_course import GolfCourse
+from .tee_box import TeeBox
+
+
+class Status(str, Enum):
+    success = "success"
+    failure = "failure"
+    error = "error"
+
+
+class FootwedgeApiMetadata(BaseModel):
+    uri: Optional[str]
+
+
+class FootwedgeApiResponse(BaseModel):
+    status: Status
+    data: Any
+    message: Optional[str]
+    metadata: Optional[FootwedgeApiMetadata]
+
+
+class GetGolfClubResponse(FootwedgeApiResponse):
+    data: Optional[GolfClub]
+
+
+class GetGolfCourseResponse(FootwedgeApiResponse):
+    data: Optional[GolfCourse]
+
+
+class GetGolfCoursesResponse(FootwedgeApiResponse):
+    data: Optional[List[GolfCourse]] = []
+
+
+class GetTeeBoxResponse(FootwedgeApiResponse):
+    data: Optional[TeeBox]
+
+
+class GetTeeBoxesResponse(FootwedgeApiResponse):
+    data: Optional[List[TeeBox]] = []
+
+
+class PostGolfClubResponse(FootwedgeApiResponse):
+    data: GolfClub
+
+
+class PostGolfCourseResponse(FootwedgeApiResponse):
+    data: GolfCourse
+
+
+class PostTeeBoxResponse(FootwedgeApiResponse):
+    data: TeeBox
