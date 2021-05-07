@@ -19,7 +19,7 @@ def post_user(username: str, user_attributes: dict):
         "phone_number": user_attributes["phone_number"],
         "gender": user_attributes["gender"],
     }
-    url = f"{FOOTWEDGE_API_URL}/users"
+    url = f"{FOOTWEDGE_API_URL}/users/"
     resp = requests.post(
         url=url,
         json=user_body,
