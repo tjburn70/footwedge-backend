@@ -14,9 +14,10 @@ provider:
   name: aws
   runtime: python3.7
   stage: dev
-  region: !Sub ${AWS::Region}
+  region: us-east-2
   memorySize: 1024
-  role: !Sub arn:aws:iam::${AWS::AccountId}:role/footwedge_lambda
+  role: !Sub arn:aws:iam::753710783959:role/footwedge_lambda
+  lambdaHashingVersion: 20201221
 
 functions:
   postConfirmationService:
