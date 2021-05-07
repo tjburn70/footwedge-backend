@@ -8,6 +8,12 @@ plugins:
 
 custom:
   tableName: 'footwedge-table-${self:provider.stage}'
+  customDomain:
+    domainName: api.footwedge.io
+    basePath: ''
+    stage: ${self:provider.stage}
+    createRoute53Record: true
+    certificateName: '*.footwedge.io'
   pythonRequirements:
     dockerizePip: non-linux
 
