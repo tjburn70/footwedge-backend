@@ -1,0 +1,73 @@
+service: footwedge-api
+app: footwedge
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  tableName: 'footwedge-table-${self:provider.stage}'
+  pythonRequirements:
+    dockerizePip: non-linux
+
+package:
+  exclude:
+    - test/**
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: !Sub ${AWS::Region}
+  memorySize: 1024
+  role: !Sub arn:aws:iam::${AWS::AccountId}:role/footwedge_lambda
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": [ "FootwedgeDynamoDBTable", "Arn" ] }
+
+functions:
+  footwedgeApi:
+    handler: handler.lambda_handler
+    module: src
+    events:
+      - http: '*'
+    environment:
+      COGNITO_REGION: !Sub ${AWS::Region}
+      COGNITO_USER_POOL_ID: us-east-2_9tqIkGeQX
+      COGNITO_WEB_CLIENT_ID: 24vuoscdcg85drk6c3bubtva2h
+      DYNAMO_DB_URL: !Sub https://dynamodb.${AWS::Region}.amazonaws.com
+      FOOTWEDGE_DYNAMO_TABLE: ${self:custom.tableName}
+
+resources:
+  Resources:
+    FootwedgeDynamoDBTable:
+      Type: 'AWS::DynamoDB::Table'
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: pk
+            AttributeType: S
+          - AttributeName: sk
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: pk
+            KeyType: HASH
+          -
+            AttributeName: sk
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        StreamSpecification:
+          StreamViewType: "NEW_IMAGES"
+        TableName: ${self:custom.tableName}
