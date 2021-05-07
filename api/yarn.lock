@@ -417,6 +417,11 @@ serverless-domain-manager@^5.1.0:
     aws-sdk "^2.756.0"
     chalk "^4.1.0"
 
+serverless-functions-base-path@^1.0.32:
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/serverless-functions-base-path/-/serverless-functions-base-path-1.0.32.tgz#cae7c233743e39717bb5e635245c0d173d635bbe"
+  integrity sha512-plowyy28cSWX1kfkkSZOpLymdiruVxUCiM/qtGIBTUmenPB2h0i+QK/i1pRhOGYK+fR+vZbOHzdNPB+QZfbdRw==
+
 serverless-python-requirements@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/serverless-python-requirements/-/serverless-python-requirements-5.1.1.tgz#62cfed95212bd535ca412bb983d73ad86d64f28f"

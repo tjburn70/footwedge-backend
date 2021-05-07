@@ -5,8 +5,10 @@ frameworkVersion: '2'
 
 plugins:
   - serverless-python-requirements
+  - serverless-functions-base-path
 
 custom:
+  functionsBasePath: src/
   tableName: 'footwedge-table-${self:provider.stage}'
   customDomain:
     domainName: api.footwedge.io
@@ -18,34 +20,47 @@ custom:
     dockerizePip: non-linux
 
 package:
-  exclude:
-    - test/**
+  patterns:
+    - '!test/**'
 
 provider:
   name: aws
   runtime: python3.7
   stage: dev
-  region: !Sub ${AWS::Region}
+  region: us-east-2
   memorySize: 1024
-  role: !Sub arn:aws:iam::${AWS::AccountId}:role/footwedge_lambda
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
-      Resource:
-        - { "Fn::GetAtt": [ "FootwedgeDynamoDBTable", "Arn" ] }
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      name: footwedge_api_lambda
+      path: /
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource:
+            - { "Fn::GetAtt": [ "FootwedgeDynamoDBTable", "Arn" ] }
+        - Effect: Allow
+          Action:
+            - execute-api:Invoke
+            - execute-api:ManageConnections
+          Resource:
+            - arn:aws:execute-api:*:*:*
+  environment:
+    PYTHONPATH: src
+  httpApi:
+    payload: '2.0'
 
 functions:
   footwedgeApi:
     handler: handler.lambda_handler
-    module: src
     events:
-      - http: '*'
+      - httpApi: '*'
     environment:
       COGNITO_REGION: !Sub ${AWS::Region}
       COGNITO_USER_POOL_ID: us-east-2_9tqIkGeQX
@@ -75,5 +90,5 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         StreamSpecification:
-          StreamViewType: "NEW_IMAGES"
+          StreamViewType: "NEW_IMAGE"
         TableName: ${self:custom.tableName}
