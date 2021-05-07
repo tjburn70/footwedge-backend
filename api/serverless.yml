@@ -6,6 +6,7 @@ frameworkVersion: '2'
 plugins:
   - serverless-python-requirements
   - serverless-functions-base-path
+  - serverless-domain-manager
 
 custom:
   functionsBasePath: src/
