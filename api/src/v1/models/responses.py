@@ -47,7 +47,7 @@ class GetTeeBoxesResponse(FootwedgeApiResponse):
 
 
 class GetUserResponse(FootwedgeApiResponse):
-    data: [User]
+    data: List[User]
 
 
 class PostGolfClubResponse(FootwedgeApiResponse):
