@@ -3,13 +3,13 @@ from typing import Dict
 from pydantic import BaseModel
 
 
-class User(BaseModel):
+class CognitoUser(BaseModel):
     user_info: Dict
 
     @property
     def email(self):
-        return self.user_info["cognito:email"]
+        return self.user_info["email"]
 
     @property
     def username(self):
-        return self.user_info["cognito:username"]
+        return self.user_info["sub"]
