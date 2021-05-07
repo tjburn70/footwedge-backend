@@ -16,7 +16,8 @@ provider:
   stage: dev
   region: us-east-2
   memorySize: 1024
-  role: !Sub arn:aws:iam::753710783959:role/footwedge_lambda
+  iam:
+    role: !Sub arn:aws:iam::753710783959:role/footwedge_lambda
   lambdaHashingVersion: 20201221
 
 functions:
