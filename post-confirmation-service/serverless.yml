@@ -27,4 +27,4 @@ functions:
           trigger: PostConfirmation
           existing: true
     environment:
-      FOOTWEDGE_BASE_API_URL: ""
+      FOOTWEDGE_API_URL: ${env:FOOTWEDGE_API_URL}

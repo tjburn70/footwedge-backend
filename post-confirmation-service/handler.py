@@ -4,13 +4,13 @@ import logging
 
 import requests
 
-FOOTWEDGE_API_BASE_URL = os.getenv("FOOTWEDGE_API_BASE_URL")
+FOOTWEDGE_API_URL = os.getenv("FOOTWEDGE_API_URL")
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
 
 
 def post_user(user_body: dict):
-    url = f"{FOOTWEDGE_API_BASE_URL}/users"
+    url = f"{FOOTWEDGE_API_URL}/users"
     resp = requests.post(
         url=url,
         json=user_body,
