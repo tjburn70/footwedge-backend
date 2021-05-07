@@ -11,6 +11,7 @@ mangum==0.11.0
 pyasn1==0.4.8
 pydantic==1.8.1
 python-dateutil==2.8.1
+python-dotenv==0.17.0
 python-jose==3.2.0
 requests==2.25.1
 rsa==4.7.2
