@@ -1,5 +1,5 @@
 import time
-from typing import Dict
+from typing import Dict, Optional
 
 from fastapi import (
     HTTPException,
@@ -13,16 +13,10 @@ from cognito_config import cognito_config
 from settings import settings
 
 
-def pull_jwk_from_token(id_token: str) -> Dict:
+def pull_jwk_from_token(id_token: str) -> Optional[Dict]:
     headers = jwt.get_unverified_headers(id_token)
     unverified_kid = headers['kid']
-
-    target_jwk = {}
-    for key in cognito_config.user_pool_jwks:
-        if key['kid'] == unverified_kid:
-            target_jwk = key
-            break
-    return target_jwk
+    return cognito_config.user_pool_jwks.get(unverified_kid)
 
 
 def verify_token_signature(id_token: str):

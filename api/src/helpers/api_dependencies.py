@@ -28,4 +28,4 @@ def get_current_user(id_token: str = Depends(get_token)) -> CognitoUser:
         id_token=id_token,
         audience=settings.COGNITO_WEB_CLIENT_ID,
     )
-    return CognitoUser(cognito_user_info=cognito_user_info)
+    return CognitoUser(user_info=cognito_user_info)
