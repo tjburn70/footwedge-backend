@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from .golf_club import GolfClub
 from .golf_course import GolfCourse
 from .tee_box import TeeBox
+from .user import User
 
 
 class Status(str, Enum):
@@ -45,6 +46,10 @@ class GetTeeBoxesResponse(FootwedgeApiResponse):
     data: Optional[List[TeeBox]] = []
 
 
+class GetUserResponse(FootwedgeApiResponse):
+    data: Optional[User]
+
+
 class PostGolfClubResponse(FootwedgeApiResponse):
     data: GolfClub
 
@@ -55,3 +60,7 @@ class PostGolfCourseResponse(FootwedgeApiResponse):
 
 class PostTeeBoxResponse(FootwedgeApiResponse):
     data: TeeBox
+
+
+class PostUserResponse(FootwedgeApiResponse):
+    data: User

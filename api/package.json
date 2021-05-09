@@ -1,0 +1,12 @@
+{
+  "name": "footwedge-api",
+  "version": "1.0.0",
+  "description": "interface to footwedge data model",
+  "main": "src/main.py",
+  "license": "MIT",
+  "dependencies": {
+    "serverless-domain-manager": "^5.1.0",
+    "serverless-functions-base-path": "^1.0.32",
+    "serverless-python-requirements": "^5.1.1"
+  }
+}

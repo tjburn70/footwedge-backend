@@ -1,0 +1,32 @@
+service: post-confirmation-service
+app: footwedge
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: us-east-2
+  memorySize: 1024
+  iam:
+    role: !Sub arn:aws:iam::753710783959:role/footwedge_lambda
+  lambdaHashingVersion: 20201221
+
+functions:
+  postConfirmationService:
+    handler: handler.lambda_handler
+    events:
+      - cognitoUserPool:
+          pool: footwedge-dev
+          trigger: PostConfirmation
+          existing: true
+    environment:
+      FOOTWEDGE_API_URL: ${env:FOOTWEDGE_API_URL}
