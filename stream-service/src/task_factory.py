@@ -12,7 +12,7 @@ from config import (
     GOLF_ROUND_TAG,
     USER_TAG,
 )
-
+from logger import get_logger
 
 KEY_TAGS_TO_TASK_CLASS = {
     GOLF_CLUB_TAG: sync_golf_club.SyncGolfClub,
@@ -20,6 +20,7 @@ KEY_TAGS_TO_TASK_CLASS = {
     GOLF_ROUND_TAG: calculate_handicap.CalculateHandicap,
     USER_TAG: sync_user.SyncUser,
 }
+logger = get_logger(name=__name__)
 
 
 def parse_tag(record_keys: dict):
@@ -38,10 +39,10 @@ def task_factory(record: dict) -> Optional[abstract_task.AbstractTask]:
     tag = parse_tag(record_keys=record_keys)
     task_class = KEY_TAGS_TO_TASK_CLASS.get(tag)
     if task_class:
-        print(f"The tag: {tag} maps to task class: {task_class}")
+        logger.info(f"The tag: {tag} maps to task class: {task_class}")
         return task_class(
             event_name=event_name,
             dynamodb_record=dynamodb_record,
         )
 
-    print(f"The tag: {tag} does not map to any class...ignoring record...")
+    logger.warning(f"The tag: {tag} does not map to any class...ignoring record...")
