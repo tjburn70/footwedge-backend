@@ -1,0 +1,60 @@
+service: stream-service
+app: footwedge
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-python-requirements
+  - serverless-functions-base-path
+
+custom:
+  functionsBasePath: src/
+  pythonRequirements:
+    dockerizePip: non-linux
+
+package:
+  patterns:
+    - '!test/**'
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-2
+  memorySize: 1024
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      name: footwedge_db_stream_lambda
+      path: /
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:DescribeStream
+            - dynamodb:ListStreams
+          Resource:
+            - arn:aws:dynamodb:us-east-2:753710783959:table/footwedge-table-dev
+        - Effect: Allow
+          Action:
+            - execute-api:Invoke
+            - execute-api:ManageConnections
+          Resource:
+            - arn:aws:execute-api:*:*:*
+  environment:
+    PYTHONPATH: src
+
+functions:
+  streamService:
+    handler: handler.lambda_handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: arn:aws:dynamodb:us-east-2:753710783959:table/footwedge-table-dev/stream/2021-05-07T20:05:15.844
+          batchSize: 10
