@@ -55,7 +55,11 @@ class User(BaseModel):
     email: str
     first_name: str
     last_name: str
-    full_name: str
     birthdate: Optional[str] = None
     phone_number: Optional[str] = None
     gender: Optional[str] = None
+    created_ts: datetime
+
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
