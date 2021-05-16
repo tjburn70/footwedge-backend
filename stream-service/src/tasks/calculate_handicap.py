@@ -13,7 +13,7 @@ class CalculateHandicap(AbstractTask):
 
     def __init__(self, event_name: str, dynamodb_record: dict):
         super(CalculateHandicap, self).__init__(event_name, dynamodb_record)
-        self.partition_key = self.keys["pk"]["s"]
+        self.partition_key = self.keys["pk"]["S"]
         self.user_id = self.partition_key.split("#")[1]
 
     @staticmethod
