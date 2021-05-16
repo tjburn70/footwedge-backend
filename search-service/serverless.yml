@@ -1,0 +1,39 @@
+service: search-service
+app: footwedge
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-python-requirements
+  - serverless-functions-base-path
+
+custom:
+  functionsBasePath: src/
+  pythonRequirements:
+    dockerizePip: non-linux
+
+package:
+  patterns:
+    - '!test/**'
+
+provider:
+  name: aws
+  runtime: python3.7
+  stage: dev
+  region: us-east-2
+  memorySize: 1024
+  lambdaHashingVersion: 20201221
+  iam:
+    role: arn:aws:iam::753710783959:role/footwedge_lambda
+  environment:
+    PYTHONPATH: src
+  httpApi:
+    payload: '2.0'
+
+functions:
+  searchService:
+    handler: handler.lambda_handler
+    events:
+      - httpApi: '*'
+    environment:
+      SEARCH_ENGINE_URI: https://3ae16e50807a.ngrok.io
