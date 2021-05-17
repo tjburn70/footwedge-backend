@@ -3,7 +3,7 @@ FROM python:3.7
 RUN apt-get update -y && \
     apt-get install -y python-pip python3.7-dev
 
-COPY src/requirements.txt ./
+COPY requirements.txt ./
 RUN pip3 install -r requirements.txt
 
 COPY requirements-dev.txt ./
