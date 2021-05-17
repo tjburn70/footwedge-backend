@@ -9,8 +9,8 @@ class GolfCourse(BaseModel):
     golf_course_id: str
     name: str
     num_holes: int
-    created_ts: datetime
-    touched_ts: Optional[datetime] = None
+    created_ts: str
+    touched_ts: Optional[str] = None
 
 
 class GolfClub(BaseModel):
@@ -24,8 +24,8 @@ class GolfClub(BaseModel):
     phone_number: Optional[str] = None
     email: Optional[str] = None
     website: Optional[AnyHttpUrl] = None
-    created_ts: datetime
-    touched_ts: datetime = None
+    created_ts: str
+    touched_ts: str = None
     golf_courses: List[GolfCourse] = []
 
 
