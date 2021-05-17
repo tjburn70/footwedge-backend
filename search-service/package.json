@@ -1,0 +1,10 @@
+{
+  "name": "search-service",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "serverless-functions-base-path": "^1.0.32",
+    "serverless-python-requirements": "^5.1.1"
+  }
+}
