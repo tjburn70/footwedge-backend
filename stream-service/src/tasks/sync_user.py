@@ -30,6 +30,6 @@ class SyncUser(AbstractTask):
         )
 
     async def process_record(self):
-        with SearchServiceApiClient() as api_client:
+        async with SearchServiceApiClient() as api_client:
             user = self.build_user()
             return await api_client.add_user(user_id=self.user_id, user=user)

@@ -49,7 +49,7 @@ class CalculateHandicap(AbstractTask):
         return round(handicap_index, 1)
 
     async def process_record(self):
-        with FootwedgeApiClient() as api_client:
+        async with FootwedgeApiClient() as api_client:
             ordered_golf_rounds = await api_client.get_golf_rounds(user_id=self.user_id)
             if not ordered_golf_rounds:
                 logger.warning(f"The user_id: {self.user_id} does not have any golf_round records")
