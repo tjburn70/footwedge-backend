@@ -64,7 +64,7 @@ class SearchServiceApiClient:
         )
 
     async def add_golf_course(self, golf_club_id: str, golf_course: GolfCourse):
-        path = f"golf_club/documents/{golf_club_id}/update/golf_courses"
+        path = f"golf_club/documents/{golf_club_id}/add/golf_courses"
         return await self.call_async(
             method="put",
             path=path,
