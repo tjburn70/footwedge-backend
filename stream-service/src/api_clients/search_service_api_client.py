@@ -47,7 +47,7 @@ class SearchServiceApiClient:
 
     async def add_user(self, user_id: str, user: User):
         data = self.serialize_document_payload(_id=user_id, model=user)
-        path = "user/document"
+        path = "user/documents"
         return await self.call_async(
             method="put",
             path=path,
@@ -56,7 +56,7 @@ class SearchServiceApiClient:
 
     async def add_golf_club(self, golf_club_id: str, golf_club: GolfClub):
         data = self.serialize_document_payload(_id=golf_club_id, model=golf_club)
-        path = "golf_club/document"
+        path = "golf_club/documents"
         return await self.call_async(
             method="put",
             path=path,
@@ -64,7 +64,7 @@ class SearchServiceApiClient:
         )
 
     async def add_golf_course(self, golf_club_id: str, golf_course: GolfCourse):
-        path = f"golf_club/document/{golf_club_id}/update/golf_courses"
+        path = f"golf_club/documents/{golf_club_id}/update/golf_courses"
         return await self.call_async(
             method="put",
             path=path,
