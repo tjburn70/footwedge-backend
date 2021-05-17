@@ -13,6 +13,10 @@ class UserBody(BaseModel):
     phone_number: Optional[str] = None
     gender: Optional[str] = None
 
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
 
 class User(UserBody):
     created_ts: datetime

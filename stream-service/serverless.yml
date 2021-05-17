@@ -1,0 +1,67 @@
+service: stream-service
+app: footwedge
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-python-requirements
+  - serverless-functions-base-path
+
+custom:
+  functionsBasePath: src/
+  pythonRequirements:
+    dockerizePip: non-linux
+
+package:
+  patterns:
+    - '!test/**'
+
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-2
+  memorySize: 1024
+  lambdaHashingVersion: 20201221
+  iam:
+    role:
+      name: footwedge_db_stream_lambda
+      path: /
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:DescribeStream
+            - dynamodb:ListStreams
+          Resource:
+            - arn:aws:dynamodb:us-east-2:753710783959:table/footwedge-table-dev
+        - Effect: Allow
+          Action:
+            - execute-api:Invoke
+            - execute-api:ManageConnections
+          Resource:
+            - arn:aws:execute-api:*:*:*
+  environment:
+    PYTHONPATH: src
+
+functions:
+  streamService:
+    handler: handler.lambda_handler
+    events:
+      - stream:
+          type: dynamodb
+          arn: arn:aws:dynamodb:us-east-2:753710783959:table/footwedge-table-dev/stream/2021-05-07T20:05:15.844
+          batchSize: 10
+    environment:
+      COGNITO_DOMAIN: footwedge-dev
+      COGNITO_REGION: !Sub ${AWS::Region}
+      STREAM_SERVICE_COGNITO_CLIENT_ID: 2b1hh1op510ck0vdo57idt0n4c
+      STREAM_SERVICE_COGNITO_CLIENT_SECRET: ${env:STREAM_SERVICE_COGNITO_CLIENT_SECRET}
+      FOOTWEDGE_API_URL: https://kllayjsit7.execute-api.us-east-2.amazonaws.com/v1
+      SEARCH_SERVICE_API_URL: https://tdl4397x3f.execute-api.us-east-2.amazonaws.com
