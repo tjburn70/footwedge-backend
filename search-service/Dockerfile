@@ -6,13 +6,10 @@ RUN apt-get update -y && \
 COPY requirements.txt ./
 RUN pip3 install -r requirements.txt
 
-COPY requirements-dev.txt ./
-RUN pip3 install -r requirements-dev.txt
-
 COPY script/server.sh ./
 
 COPY src ./src
 
-EXPOSE 8001
+EXPOSE 8002
 
 ENTRYPOINT ["./server.sh"]
