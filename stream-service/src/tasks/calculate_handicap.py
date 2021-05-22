@@ -49,41 +49,42 @@ class CalculateHandicap(AbstractTask):
         return round(handicap_index, 1)
 
     async def process_record(self):
-        async with FootwedgeApiClient() as api_client:
-            ordered_golf_rounds = await api_client.get_golf_rounds(user_id=self.user_id)
-            if not ordered_golf_rounds:
-                logger.warning(f"The user_id: {self.user_id} does not have any golf_round records")
-                return
+        if self.event_name in ["INSERT", "DELETE"]:
+            async with FootwedgeApiClient() as api_client:
+                ordered_golf_rounds = await api_client.get_golf_rounds(user_id=self.user_id)
+                if not ordered_golf_rounds:
+                    logger.warning(f"The user_id: {self.user_id} does not have any golf_round records")
+                    return
 
-            if len(ordered_golf_rounds) > 20:
-                golf_rounds = ordered_golf_rounds[:20]
-            else:
-                golf_rounds = ordered_golf_rounds
+                if len(ordered_golf_rounds) > 20:
+                    golf_rounds = ordered_golf_rounds[:20]
+                else:
+                    golf_rounds = ordered_golf_rounds
 
-            differentials = []
-            for golf_round in golf_rounds:
-                tee_box = await api_client.get_tee_box(
-                    golf_course_id=golf_round.golf_course_id,
-                    tee_box_id=golf_round.tee_box_id,
+                differentials = []
+                for golf_round in golf_rounds:
+                    tee_box = await api_client.get_tee_box(
+                        golf_course_id=golf_round.golf_course_id,
+                        tee_box_id=golf_round.tee_box_id,
+                    )
+                    differential = self.calculate_differential(
+                        gross_score=golf_round.gross_score,
+                        course_rating=tee_box.course_rating,
+                        slope=tee_box.slope,
+                    )
+                    differentials.append(differential)
+
+                try:
+                    handicap_index = self.calculate_handicap_index(differentials=differentials)
+                except SampleSizeTooSmall as exc:
+                    logger.exception(exc)
+                    return
+
+                await api_client.post_handicap(
+                    user_id=self.user_id,
+                    handicap_index=handicap_index,
                 )
-                differential = self.calculate_differential(
-                    gross_score=golf_round.gross_score,
-                    course_rating=tee_box.course_rating,
-                    slope=tee_box.slope,
+                success_message = (
+                    f"Successfully calculated and added a new handicap: {handicap_index} for user: {self.user_id}"
                 )
-                differentials.append(differential)
-
-            try:
-                handicap_index = self.calculate_handicap_index(differentials=differentials)
-            except SampleSizeTooSmall as exc:
-                logger.exception(exc)
-                return
-
-            await api_client.post_handicap(
-                user_id=self.user_id,
-                handicap_index=handicap_index,
-            )
-            success_message = (
-                f"Successfully calculated and added a new handicap: {handicap_index} for user: {self.user_id}"
-            )
-            logger.info(success_message)
+                logger.info(success_message)
