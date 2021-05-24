@@ -6,7 +6,6 @@ from pydantic import BaseModel
 from .golf_club import GolfClub
 from .golf_course import GolfCourse
 from .golf_round import GolfRound
-from .golf_round_stat import GolfRoundStat
 from .tee_box import TeeBox
 from .user import User
 
@@ -81,4 +80,4 @@ class PostUserResponse(FootwedgeApiResponse):
 
 
 class PutGolfRoundStatResponse(FootwedgeApiResponse):
-    data: GolfRoundStat
+    data: GolfRound
