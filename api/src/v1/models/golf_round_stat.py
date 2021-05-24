@@ -10,9 +10,9 @@ class GolfRoundStatBody(BaseModel):
     fairway_hit: bool
     green_in_regulation: bool
     putts: int
-    chips: int
-    greenside_sand_shots: int
-    penalties: int
+    chips: Optional[int] = None
+    greenside_sand_shots: Optional[int] = None
+    penalties: Optional[int] = None
 
 
 class GolfRoundStat(GolfRoundStatBody):
