@@ -22,7 +22,7 @@ services:
       discovery.type: single-node
   search-service-api:
     container_name: search-service-api
-    image: tjburn70/footwedge:search-service-api-latest
+    image: tjburn70/search-service-api:latest
     build:
       context: ./search-service
       dockerfile: Dockerfile
@@ -30,6 +30,7 @@ services:
       - "8002:8002"
     environment:
       - SEARCH_ENGINE_URI=http://footwedge-search
+      - PYTHONPATH=src
     volumes:
       - $HOME/.aws:/root/.aws:ro
       - ./search-service/src:/src
@@ -37,18 +38,19 @@ services:
       - elasticsearch
   footwedge-api:
     container_name: footwedge-api
-    image: tjburn70/footwedge:api-latest
+    image: tjburn70/footwedge-api:latest
     build:
       context: ./api
       dockerfile: Dockerfile
     ports:
       - "8001:8001"
     environment:
-      - COGNITO_REGION: us-east-2
-      - COGNITO_USER_POOL_ID: us-east-2_9tqIkGeQX
-      - COGNITO_WEB_CLIENT_ID: 24vuoscdcg85drk6c3bubtva2h
-      - DYNAMO_DB_URL: http://localhost:8000
-      - FOOTWEDGE_DYNAMO_TABLE: FootwedgeTable
+      - COGNITO_REGION=us-east-2
+      - COGNITO_USER_POOL_ID=us-east-2_9tqIkGeQX"
+      - COGNITO_WEB_CLIENT_ID=24vuoscdcg85drk6c3bubtva2h
+      - DYNAMO_DB_URL=http://localhost:8000
+      - FOOTWEDGE_DYNAMO_TABLE=FootwedgeTable
+      - PYTHONPATH=src
     volumes:
       - $HOME/.aws:/root/.aws:ro
       - ./api/src:/src
