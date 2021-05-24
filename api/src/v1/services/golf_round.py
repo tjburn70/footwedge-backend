@@ -52,6 +52,7 @@ class GolfRoundService:
             }
             for stat in golf_round_body.stats
         ]
+        played_on = golf_round_body.played_on.isoformat() if golf_round_body.played_on else None
         item = {
             'pk': partition_key,
             'sk': sort_key,
@@ -63,7 +64,7 @@ class GolfRoundService:
             'tee_box_id': golf_round_body.tee_box_id,
             'gross_score': golf_round_body.gross_score,
             'towards_handicap': golf_round_body.towards_handicap,
-            'played_on': golf_round_body.played_on,
+            'played_on': played_on,
         }
         response = self.repo.add(item=item)
         validate_response(response)
@@ -87,11 +88,12 @@ class GolfRoundService:
             sort_key=sort_key,
             stat=golf_round_stat_body,
         )
-        print(f"response: {response}")
         validate_response(response)
+        golf_round = GolfRound(**response['Attributes'])
         uri = f"/{API_VERSION}/golf-rounds/{golf_round_id}"
         return PutGolfRoundStatResponse(
             status="success",
+            data=golf_round,
             metadata=FootwedgeApiMetadata(uri=uri)
         )
 
