@@ -46,9 +46,9 @@ services:
       - "8001:8001"
     environment:
       - COGNITO_REGION=us-east-2
-      - COGNITO_USER_POOL_ID=us-east-2_9tqIkGeQX"
+      - COGNITO_USER_POOL_ID=us-east-2_9tqIkGeQX
       - COGNITO_WEB_CLIENT_ID=24vuoscdcg85drk6c3bubtva2h
-      - DYNAMO_DB_URL=http://localhost:8000
+      - DYNAMO_DB_URL=http://footwedge-dynamodb-local:8000
       - FOOTWEDGE_DYNAMO_TABLE=FootwedgeTable
       - PYTHONPATH=src
     volumes:
