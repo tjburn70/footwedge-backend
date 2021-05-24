@@ -82,7 +82,6 @@ class GolfCourseService:
         )
         item = response.get('Item')
         if item:
-            print(f"item: {item}")
             tee_box = TeeBox(**item)
             return GetTeeBoxResponse(
                 status=Status.success,
@@ -101,7 +100,6 @@ class GolfCourseService:
         )
         items = response.get('Items')
         if items:
-            print(f"items: {items}")
             tee_boxes = [TeeBox(**item) for item in items]
             return GetTeeBoxesResponse(
                 status=Status.success,
