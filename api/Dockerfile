@@ -15,4 +15,5 @@ COPY src ./src
 
 EXPOSE 8001
 
+RUN ["chmod", "+x", "./server.sh"]
 ENTRYPOINT ["./server.sh"]
