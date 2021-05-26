@@ -53,3 +53,14 @@ def add_golf_round_stat(
         golf_round_id=golf_round_id,
         golf_round_stat_body=stat_body,
     )
+
+
+@router.get('/{golf_round_id}/aggregate-stats')
+def get_aggregate_round_stats(
+        golf_round_id: str,
+        user: CognitoUser = Depends(get_current_user),
+):
+    service = GolfRoundService(user=user, repo=golf_round_repo)
+    return service.aggregate_golf_round_stats(
+        golf_round_id=golf_round_id,
+    )
