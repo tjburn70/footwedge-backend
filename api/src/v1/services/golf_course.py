@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from typing import Dict
 
 from v1.constants import (
     API_VERSION,
@@ -8,6 +9,7 @@ from v1.constants import (
 )
 from v1.repositories.golf_course_repository import GolfCourseRepository
 from v1.repositories.utils import validate_response
+from v1.models.golf_hole import GolfHole
 from v1.models.tee_box import (
     TeeBox,
     TeeBoxBody,
@@ -110,3 +112,17 @@ class GolfCourseService:
             data=[],
             message=f"No tee boxes found with golf_course_id {golf_course_id}"
         )
+
+    def map_golf_hole_by_id(self, golf_course_id: str, tee_box_id: str) -> Dict[str, GolfHole]:
+        partition_key = self._tag_key(_key=golf_course_id)
+        sort_key = f"{TEE_BOX_TAG}{tee_box_id}"
+        response = self.repo.get(
+            partition_key=partition_key,
+            sort_key=sort_key,
+        )
+        item = response.get('Item')
+        if item:
+            return {
+                hole['hole_id']: GolfHole(**hole)
+                for hole in item.get('holes', [])
+            }
