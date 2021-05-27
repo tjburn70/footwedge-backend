@@ -6,6 +6,7 @@ from pydantic import BaseModel
 from .golf_club import GolfClub
 from .golf_course import GolfCourse
 from .golf_round import GolfRound
+from .handicap import Handicap
 from .tee_box import TeeBox
 from .user import User
 
@@ -47,6 +48,14 @@ class GetGolfRoundsResponse(FootwedgeApiResponse):
     data: Optional[List[GolfRound]] = []
 
 
+class GetActiveHandicapResponse(FootwedgeApiResponse):
+    data: Optional[Handicap]
+
+
+class GetHandicapsResponse(FootwedgeApiResponse):
+    data: Optional[List[Handicap]] = []
+
+
 class GetTeeBoxResponse(FootwedgeApiResponse):
     data: Optional[TeeBox]
 
@@ -65,6 +74,10 @@ class PostGolfClubResponse(FootwedgeApiResponse):
 
 class PostGolfCourseResponse(FootwedgeApiResponse):
     data: GolfCourse
+
+
+class PostHandicapResponse(FootwedgeApiResponse):
+    data: Optional[Handicap]
 
 
 class PostGolfRoundResponse(FootwedgeApiResponse):

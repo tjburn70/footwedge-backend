@@ -3,7 +3,9 @@ from fastapi import (
     Header,
     HTTPException,
     status,
+    Request,
 )
+from fastapi.security import SecurityScopes
 
 from helpers import auth
 from models.user import CognitoUser
@@ -29,3 +31,9 @@ def get_current_user(id_token: str = Depends(get_token)) -> CognitoUser:
         audience=settings.COGNITO_WEB_CLIENT_ID,
     )
     return CognitoUser(user_info=cognito_user_info)
+
+
+def authorize_client(security_scopes: SecurityScopes, access_token: str = Depends(get_token)):
+    auth.verify_token_signature(access_token)
+    auth.verify_token_expiration(access_token)
+    auth.verify_token_scopes(access_token, security_scopes.scopes)
