@@ -1,5 +1,5 @@
 import time
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 from fastapi import (
     HTTPException,
@@ -19,8 +19,8 @@ def pull_jwk_from_token(id_token: str) -> Optional[Dict]:
     return cognito_config.user_pool_jwks.get(unverified_kid)
 
 
-def verify_token_signature(id_token: str):
-    target_jwk = pull_jwk_from_token(id_token)
+def verify_token_signature(token: str):
+    target_jwk = pull_jwk_from_token(token)
     if not target_jwk:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -30,7 +30,7 @@ def verify_token_signature(id_token: str):
     public_key = jwk.construct(target_jwk, algorithm='RS256')
 
     delimiter = '.'
-    message, encoded_signature = id_token.rsplit(delimiter, 1)
+    message, encoded_signature = token.rsplit(delimiter, 1)
 
     decoded_signature = base64url_decode(encoded_signature.encode('utf-8'))
     if not public_key.verify(message.encode('utf-8'), decoded_signature):
@@ -40,12 +40,22 @@ def verify_token_signature(id_token: str):
         )
 
 
-def verify_token_expiration(id_token: str):
-    claims = jwt.get_unverified_claims(id_token)
+def verify_token_expiration(token: str):
+    claims = jwt.get_unverified_claims(token)
     if time.time() > claims['exp']:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token Expired"
+        )
+
+
+def verify_token_scopes(access_token: str, required_scopes: List[str]):
+    claims = jwt.get_unverified_claims(access_token)
+    token_scopes = claims["scope"].split()
+    if not all(required_scope in token_scopes for required_scope in required_scopes):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Client does not have access to this operation"
         )
 
 
