@@ -5,9 +5,11 @@ from typing import Optional
 from pydantic import BaseModel
 
 
-class Handicap(BaseModel):
-    handicap_id: str
+class HandicapBody(BaseModel):
     index: Decimal
-    authorized_association: Optional[str] = None
-    record_start_date: datetime
-    record_end_date: datetime
+    authorized_association: Optional[str] = 'USGA'
+
+
+class Handicap(HandicapBody):
+    handicap_id: str
+    created_ts: datetime
