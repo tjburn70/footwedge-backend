@@ -1,5 +1,6 @@
 import uuid
 from datetime import datetime
+from functools import reduce
 from typing import Dict
 
 from v1.constants import (
@@ -75,6 +76,27 @@ class GolfCourseService:
             metadata=FootwedgeApiMetadata(uri=uri)
         )
 
+    @staticmethod
+    def _map_tee_box(raw_tee_box: dict) -> TeeBox:
+        tee_box_info = f"{raw_tee_box['tee_box_color']} ({raw_tee_box['course_rating']} | {raw_tee_box['slope']})"
+        holes = raw_tee_box['holes']
+        front_nine_holes = holes[:9] if holes else []
+        back_nine_holes = holes[9:] if holes else []
+        front_nine_yardage = reduce(lambda x, y: x + y, [hole['distance'] for hole in front_nine_holes])
+        front_nine_par = reduce(lambda x, y: x + y, [hole['par'] for hole in front_nine_holes])
+        back_nine_yardage = reduce(lambda x, y: x + y, [hole['distance'] for hole in back_nine_holes])
+        back_nine_par = reduce(lambda x, y: x + y, [hole['par'] for hole in back_nine_holes])
+        return TeeBox(
+            tee_box_info=tee_box_info,
+            front_nine_holes=front_nine_holes,
+            front_nine_yardage=front_nine_yardage,
+            front_nine_par=front_nine_par,
+            back_nine_holes=back_nine_holes,
+            back_nine_yardage=back_nine_yardage,
+            back_nine_par=back_nine_par,
+            **raw_tee_box
+        )
+
     def get_tee_box(self, golf_course_id: str, tee_box_id: str) -> GetTeeBoxResponse:
         partition_key = self._tag_key(_key=golf_course_id)
         sort_key = f"{TEE_BOX_TAG}{tee_box_id}"
@@ -84,7 +106,7 @@ class GolfCourseService:
         )
         item = response.get('Item')
         if item:
-            tee_box = TeeBox(**item)
+            tee_box = self._map_tee_box(raw_tee_box=item)
             return GetTeeBoxResponse(
                 status=Status.success,
                 data=tee_box,
@@ -102,7 +124,7 @@ class GolfCourseService:
         )
         items = response.get('Items')
         if items:
-            tee_boxes = [TeeBox(**item) for item in items]
+            tee_boxes = [self._map_tee_box(raw_tee_box=item) for item in items]
             return GetTeeBoxesResponse(
                 status=Status.success,
                 data=tee_boxes,
