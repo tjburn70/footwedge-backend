@@ -30,6 +30,7 @@ class SyncUser(AbstractTask):
         )
 
     async def process_record(self):
-        async with SearchServiceApiClient() as api_client:
-            user = self.build_user()
-            return await api_client.add_user(user_id=self.user_id, user=user)
+        if self.event_name == "INSERT":
+            async with SearchServiceApiClient() as api_client:
+                user = self.build_user()
+                return await api_client.add_user(user_id=self.user_id, user=user)

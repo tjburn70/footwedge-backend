@@ -29,12 +29,12 @@ class FootwedgeApiClient:
     async def auth_headers(self) -> Dict[str, str]:
         if not self._auth_headers:
             access_token = await self.get_access_token()
-            self._auth_headers['Authorization'] = access_token
+            self._auth_headers['Authorization'] = f"Bearer {access_token}"
         return self._auth_headers
 
     async def get_access_token(self):
         cognito_token_url = (
-            f"https://{settings.COGNTIO_DOMAIN}.auth.{settings.COGNITO_REGION}.amazoncognito.com/oauth2/token"
+            f"https://{settings.COGNITO_DOMAIN}.auth.{settings.COGNITO_REGION}.amazoncognito.com/oauth2/token"
         )
         payload = {
             'grant_type': 'client_credentials',
@@ -51,7 +51,8 @@ class FootwedgeApiClient:
         url = f"{settings.FOOTWEDGE_API_URL}/{path}"
         logger.info(f"async requesting: {method} {url}")
         kwarg_headers = kwargs.pop('headers', {})
-        headers = {**self.auth_headers, **kwarg_headers}
+        auth_headers = await self.auth_headers
+        headers = {**auth_headers, **kwarg_headers}
         async with self.session.request(
             method,
             url,
@@ -64,7 +65,7 @@ class FootwedgeApiClient:
             return data
 
     async def get_golf_rounds(self, user_id: str) -> List[GolfRound]:
-        path = f"/golf-rounds/{user_id}"
+        path = f"golf-rounds/user/{user_id}"
         resp_body = await self.call_async(
             method="get",
             path=path,
@@ -73,7 +74,7 @@ class FootwedgeApiClient:
         return [GolfRound(**result) for result in results]
 
     async def get_tee_box(self, golf_course_id: str, tee_box_id: str) -> TeeBox:
-        path = f"/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}"
+        path = f"golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}"
         resp_body = await self.call_async(
             method="get",
             path=path,
@@ -86,7 +87,7 @@ class FootwedgeApiClient:
         return TeeBox(**data)
 
     async def post_handicap(self, user_id: str, handicap_index: Decimal):
-        path = f"/handicaps/{user_id}"
+        path = f"handicaps/{user_id}"
         data = {"index": handicap_index, "authorized_association": "USGA"}
         return await self.call_async(
             method="post",

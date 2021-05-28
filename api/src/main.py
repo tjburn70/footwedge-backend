@@ -8,7 +8,7 @@ from v1.router import v1__router
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000"
+    "http://localhost:3000",
 ]
 app.add_middleware(
     CORSMiddleware,
