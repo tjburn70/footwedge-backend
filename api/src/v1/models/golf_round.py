@@ -19,7 +19,9 @@ class RoundType(str, Enum):
 
 class GolfRoundBody(BaseModel):
     golf_club_id: str
+    golf_club_name: str
     golf_course_id: str
+    golf_course_name: str
     tee_box_id: str
     tee_box_distance: str
     tee_box_color: str
