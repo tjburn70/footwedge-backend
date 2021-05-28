@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Security
 
-from helpers.api_dependencies import get_current_user
+from helpers.api_dependencies import get_current_user, authorize_client
 from models.user import CognitoUser
 
 from v1.models.golf_round import GolfRoundBody
@@ -16,6 +16,7 @@ from v1.models.responses import (
 from v1.repositories.golf_round_repository import golf_round_repo
 from v1.services.golf_round import GolfRoundService
 
+READ_SCOPE = 'footwedge-api/golf-rounds.read'
 PATH_PREFIX = 'golf-rounds'
 router = APIRouter()
 
@@ -24,6 +25,12 @@ router = APIRouter()
 def get_golf_rounds(user: CognitoUser = Depends(get_current_user)):
     service = GolfRoundService(user=user, repo=golf_round_repo)
     return service.get_golf_rounds()
+
+
+@router.get('/{user_id}', response_model=GetGolfRoundsResponse)
+def get_golf_rounds_by_user_id(user_id: str, _: str = Security(authorize_client, scopes=[READ_SCOPE])):
+    service = GolfRoundService(repo=golf_round_repo)
+    return service.get_golf_rounds_by_user_id(user_id=user_id)
 
 
 @router.post('/', response_model=PostGolfRoundResponse)

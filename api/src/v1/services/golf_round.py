@@ -40,7 +40,7 @@ logger = get_logger(__name__)
 
 class GolfRoundService:
 
-    def __init__(self, repo: GolfRoundRepository, user: CognitoUser):
+    def __init__(self, repo: GolfRoundRepository, user: Optional[CognitoUser] = None):
         self.repo = repo
         self.user = user
 
@@ -132,6 +132,22 @@ class GolfRoundService:
             status=Status.success,
             data=[],
             message=f"No golf rounds found for user with id: {self.user.username}"
+        )
+
+    def get_golf_rounds_by_user_id(self, user_id: str) -> GetGolfRoundsResponse:
+        partition_key = self._tag_key(_key=self.user.username)
+        response = self.repo.get_golf_rounds(partition_key=partition_key)
+        items = response.get('Items')
+        if items:
+            golf_rounds = [GolfRound(**item) for item in items]
+            return GetGolfRoundsResponse(
+                status=Status.success,
+                data=golf_rounds,
+            )
+        return GetGolfRoundsResponse(
+            status=Status.success,
+            data=[],
+            message=f"No golf rounds found for user with id: {user_id}"
         )
 
     def get_golf_round(self, golf_round_id: str) -> GetGolfRoundResponse:
