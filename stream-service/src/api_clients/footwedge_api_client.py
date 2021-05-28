@@ -65,7 +65,7 @@ class FootwedgeApiClient:
             return data
 
     async def get_golf_rounds(self, user_id: str) -> List[GolfRound]:
-        path = f"/golf-rounds/user/{user_id}"
+        path = f"golf-rounds/user/{user_id}"
         resp_body = await self.call_async(
             method="get",
             path=path,
@@ -74,7 +74,7 @@ class FootwedgeApiClient:
         return [GolfRound(**result) for result in results]
 
     async def get_tee_box(self, golf_course_id: str, tee_box_id: str) -> TeeBox:
-        path = f"/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}"
+        path = f"golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}"
         resp_body = await self.call_async(
             method="get",
             path=path,
@@ -87,7 +87,7 @@ class FootwedgeApiClient:
         return TeeBox(**data)
 
     async def post_handicap(self, user_id: str, handicap_index: Decimal):
-        path = f"/handicaps/{user_id}"
+        path = f"handicaps/{user_id}"
         data = {"index": handicap_index, "authorized_association": "USGA"}
         return await self.call_async(
             method="post",
