@@ -27,12 +27,6 @@ def get_golf_rounds(user: CognitoUser = Depends(get_current_user)):
     return service.get_golf_rounds()
 
 
-@router.get('/{user_id}', response_model=GetGolfRoundsResponse)
-def get_golf_rounds_by_user_id(user_id: str, _: str = Security(authorize_client, scopes=[READ_SCOPE])):
-    service = GolfRoundService(repo=golf_round_repo)
-    return service.get_golf_rounds_by_user_id(user_id=user_id)
-
-
 @router.post('/', response_model=PostGolfRoundResponse)
 def add_golf_rounds(
         golf_round_body: GolfRoundBody,
@@ -79,3 +73,10 @@ def get_aggregate_round_stats(
     return service.aggregate_golf_round_stats(
         golf_round_id=golf_round_id,
     )
+
+
+@router.get('/user/{user_id}', response_model=GetGolfRoundsResponse)
+def get_golf_rounds_by_user_id(user_id: str, _: str = Security(authorize_client, scopes=[READ_SCOPE])):
+    service = GolfRoundService(repo=golf_round_repo)
+    return service.get_golf_rounds_by_user_id(user_id=user_id)
+
