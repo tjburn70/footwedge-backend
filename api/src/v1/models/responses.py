@@ -54,7 +54,7 @@ class GetGolfRoundAggregateStats(FootwedgeApiResponse):
 
 
 class GetGolfRoundsAggregateStats(FootwedgeApiResponse):
-    data: Optional[Dict[str, GolfRoundAggregateStats]]
+    data: Optional[Dict[str, Optional[GolfRoundAggregateStats]]]
 
 
 class GetActiveHandicapResponse(FootwedgeApiResponse):
