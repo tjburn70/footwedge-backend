@@ -51,7 +51,8 @@ class FootwedgeApiClient:
         url = f"{settings.FOOTWEDGE_API_URL}/{path}"
         logger.info(f"async requesting: {method} {url}")
         kwarg_headers = kwargs.pop('headers', {})
-        headers = {**self.auth_headers, **kwarg_headers}
+        auth_headers = await self.auth_headers
+        headers = {**auth_headers, **kwarg_headers}
         async with self.session.request(
             method,
             url,
