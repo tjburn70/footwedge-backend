@@ -64,7 +64,7 @@ class FootwedgeApiClient:
             return data
 
     async def get_golf_rounds(self, user_id: str) -> List[GolfRound]:
-        path = f"/golf-rounds/{user_id}"
+        path = f"/golf-rounds/user/{user_id}"
         resp_body = await self.call_async(
             method="get",
             path=path,
