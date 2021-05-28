@@ -1,11 +1,12 @@
 from enum import Enum
-from typing import Any, Optional, List
+from typing import Any, Dict, Optional, List
 
 from pydantic import BaseModel
 
 from .golf_club import GolfClub
 from .golf_course import GolfCourse
 from .golf_round import GolfRound
+from .golf_round_stat import GolfRoundAggregateStats
 from .handicap import Handicap
 from .tee_box import TeeBox
 from .user import User
@@ -46,6 +47,14 @@ class GetGolfRoundResponse(FootwedgeApiResponse):
 
 class GetGolfRoundsResponse(FootwedgeApiResponse):
     data: Optional[List[GolfRound]] = []
+
+
+class GetGolfRoundAggregateStats(FootwedgeApiResponse):
+    data: Optional[GolfRoundAggregateStats]
+
+
+class GetGolfRoundsAggregateStats(FootwedgeApiResponse):
+    data: Optional[Dict[str, GolfRoundAggregateStats]]
 
 
 class GetActiveHandicapResponse(FootwedgeApiResponse):
