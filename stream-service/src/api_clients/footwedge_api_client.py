@@ -34,7 +34,7 @@ class FootwedgeApiClient:
 
     async def get_access_token(self):
         cognito_token_url = (
-            f"https://{settings.COGNTIO_DOMAIN}.auth.{settings.COGNITO_REGION}.amazoncognito.com/oauth2/token"
+            f"https://{settings.COGNITO_DOMAIN}.auth.{settings.COGNITO_REGION}.amazoncognito.com/oauth2/token"
         )
         payload = {
             'grant_type': 'client_credentials',
