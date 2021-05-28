@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime
 from functools import reduce
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from logger import get_logger
 from models.user import CognitoUser
@@ -18,13 +18,18 @@ from v1.models.golf_hole import GolfHole
 from v1.models.golf_round import (
     GolfRound,
     GolfRoundBody,
+)
+from v1.models.golf_round_stat import (
     GolfRoundStat,
     GolfRoundStatBody,
+    GolfRoundAggregateStats,
 )
 from v1.models.responses import (
     FootwedgeApiMetadata,
     GetGolfRoundResponse,
     GetGolfRoundsResponse,
+    GetGolfRoundAggregateStats,
+    GetGolfRoundsAggregateStats,
     PostGolfRoundResponse,
     PutGolfRoundStatResponse,
     Status,
@@ -218,7 +223,48 @@ class GolfRoundService:
                 double_bogeys += 1
         return double_bogeys
 
-    def aggregate_golf_round_stats(self, golf_round_id: str):
+    def summarize_golf_round(self, golf_round: dict) -> Optional[GolfRoundAggregateStats]:
+        stats = [GolfRoundStat(**stat) for stat in golf_round['stats'] if golf_round.get('stats')]
+        if not stats:
+            return
+
+        golf_course_service = GolfCourseService(repo=golf_course_repo)
+        golf_course_id = golf_round.get('golf_course_id', "")
+        tee_box_id = golf_round.get('tee_box_id', "")
+        hole_id_to_hole = golf_course_service.map_golf_hole_by_id(
+            golf_course_id=golf_course_id,
+            tee_box_id=tee_box_id,
+        )
+
+        def total():
+            return lambda x, y: x + y
+
+        putts = reduce(total(), [stat.putts for stat in stats])
+        fairways = reduce(total(), [stat.fairway_hit for stat in stats])
+        greens_in_regulation = reduce(total(), [stat.green_in_regulation for stat in stats])
+        penalties = reduce(total(), [stat.penalties for stat in stats])
+        three_putts = reduce(total(), [1 for stat in stats if stat.putts >= 3])
+        up_and_downs = self.calculate_up_and_downs(stats, hole_id_to_hole)
+        sand_saves = self.calculate_sand_saves(stats, hole_id_to_hole)
+        birdies = self.calculate_birdies(stats, hole_id_to_hole)
+        pars = self.calculate_pars(stats, hole_id_to_hole)
+        bogeys = self.calculate_bogeys(stats, hole_id_to_hole)
+        double_bogeys = self.calculate_double_bogeys(stats, hole_id_to_hole)
+        return GolfRoundAggregateStats(
+            putts=putts,
+            fairways=fairways,
+            greens_in_regulation=greens_in_regulation,
+            penalties=penalties,
+            three_putts=three_putts,
+            up_and_downs=up_and_downs,
+            sand_saves=sand_saves,
+            birdies=birdies,
+            pars=pars,
+            bogeys=bogeys,
+            double_bogeys=double_bogeys,
+        )
+
+    def aggregate_golf_round_stats(self, golf_round_id: str) -> GetGolfRoundAggregateStats:
         partition_key = self._tag_key(_key=self.user.username)
         sort_key = f"{GOLF_ROUND_TAG}{golf_round_id}"
         response = self.repo.get(
@@ -227,42 +273,32 @@ class GolfRoundService:
         )
         item = response.get('Item')
         if item:
-            stats = [GolfRoundStat(**stat) for stat in item['stats'] if item.get('stats')]
-            if not stats:
-                return
-
-            golf_course_service = GolfCourseService(repo=golf_course_repo)
-            golf_course_id = item.get('golf_course_id', "")
-            tee_box_id = item.get('tee_box_id', "")
-            hole_id_to_hole = golf_course_service.map_golf_hole_by_id(
-                golf_course_id=golf_course_id,
-                tee_box_id=tee_box_id,
+            aggregate_stats = self.summarize_golf_round(golf_round=item)
+            return GetGolfRoundAggregateStats(
+                status=Status.success,
+                data=aggregate_stats,
             )
+        return GetGolfRoundAggregateStats(
+            status=Status.success,
+            data=None,
+            message=f"No golf_round found with {golf_round_id}"
+        )
 
-            def total():
-                return lambda x, y: x+y
-
-            putts = reduce(total(), [stat.putts for stat in stats])
-            fairways = reduce(total(), [stat.fairway_hit for stat in stats])
-            greens_in_regulation = reduce(total(), [stat.green_in_regulation for stat in stats])
-            penalties = reduce(total(), [stat.penalties for stat in stats])
-            three_putts = reduce(total(), [1 for stat in stats if stat.putts >= 3])
-            up_and_downs = self.calculate_up_and_downs(stats, hole_id_to_hole)
-            sand_saves = self.calculate_sand_saves(stats, hole_id_to_hole)
-            birdies = self.calculate_birdies(stats, hole_id_to_hole)
-            pars = self.calculate_pars(stats, hole_id_to_hole)
-            bogeys = self.calculate_bogeys(stats, hole_id_to_hole)
-            double_bogeys = self.calculate_double_bogeys(stats, hole_id_to_hole)
-            return {
-                "putts": putts,
-                "fairways": fairways,
-                "greens_in_regulation": greens_in_regulation,
-                "penalties": penalties,
-                "three_putts": three_putts,
-                "up_and_downs": up_and_downs,
-                "sand_saves": sand_saves,
-                "birdies": birdies,
-                "pars": pars,
-                "bogeys": bogeys,
-                "double_bogeys": double_bogeys,
+    def map_round_id_to_aggregate_stats(self):
+        partition_key = self._tag_key(_key=self.user.username)
+        response = self.repo.get_golf_rounds(partition_key=partition_key)
+        items = response.get('Items')
+        if items:
+            round_id_to_aggregate_stats = {
+                item['golf_round_id']: self.summarize_golf_round(golf_round=item)
+                for item in items
             }
+            return GetGolfRoundsAggregateStats(
+                status=Status.success,
+                data=round_id_to_aggregate_stats,
+            )
+        return GetGolfRoundsAggregateStats(
+            status=Status.success,
+            data=None,
+            message=f"User has no golf rounds to aggregate"
+        )
