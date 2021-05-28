@@ -135,7 +135,7 @@ class GolfRoundService:
         )
 
     def get_golf_rounds_by_user_id(self, user_id: str) -> GetGolfRoundsResponse:
-        partition_key = self._tag_key(_key=self.user.username)
+        partition_key = self._tag_key(_key=user_id)
         response = self.repo.get_golf_rounds(partition_key=partition_key)
         items = response.get('Items')
         if items:
