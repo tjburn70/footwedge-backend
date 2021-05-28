@@ -250,7 +250,7 @@ class GolfRoundService:
         putts = reduce(total(), [stat.putts for stat in stats])
         fairways = reduce(total(), [stat.fairway_hit for stat in stats])
         greens_in_regulation = reduce(total(), [stat.green_in_regulation for stat in stats])
-        penalties = reduce(total(), [stat.penalties for stat in stats])
+        penalties = reduce(total(), [stat.penalties for stat in stats if stat.penalties])
         three_putts = reduce(total(), [1 for stat in stats if stat.putts >= 3])
         up_and_downs = self.calculate_up_and_downs(stats, hole_id_to_hole)
         sand_saves = self.calculate_sand_saves(stats, hole_id_to_hole)
