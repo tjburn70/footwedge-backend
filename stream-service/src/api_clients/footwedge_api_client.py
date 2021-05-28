@@ -29,7 +29,7 @@ class FootwedgeApiClient:
     async def auth_headers(self) -> Dict[str, str]:
         if not self._auth_headers:
             access_token = await self.get_access_token()
-            self._auth_headers['Authorization'] = access_token
+            self._auth_headers['Authorization'] = f"Bearer {access_token}"
         return self._auth_headers
 
     async def get_access_token(self):
