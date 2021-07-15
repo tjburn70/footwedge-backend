@@ -124,9 +124,14 @@ class GolfRoundService:
         items = response.get('Items')
         if items:
             golf_rounds = [GolfRound(**item) for item in items]
+            sorted_golf_rounds = sorted(
+                golf_rounds,
+                key=lambda golf_round: golf_round.played_on,
+                reverse=True
+            )
             return GetGolfRoundsResponse(
                 status=Status.success,
-                data=golf_rounds,
+                data=sorted_golf_rounds,
             )
         return GetGolfRoundsResponse(
             status=Status.success,
