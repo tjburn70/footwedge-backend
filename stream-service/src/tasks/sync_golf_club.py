@@ -64,7 +64,6 @@ class SyncGolfClub(AbstractTask):
         golf_club_id = self.partition_key.split(self.key_delimiter)[1]
         golf_club = self.build_golf_club(golf_club_id=golf_club_id)
         return await api_client.add_golf_club(
-            golf_club_id=golf_club_id,
             golf_club=golf_club,
         )
 

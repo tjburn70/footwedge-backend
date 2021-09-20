@@ -53,8 +53,8 @@ class FootwedgeSearchClient:
             data=data,
         )
 
-    async def add_golf_club(self, golf_club_id: str, golf_club: GolfClub):
-        data = self.serialize_document_payload(_id=golf_club_id, model=golf_club)
+    async def add_golf_club(self, golf_club: GolfClub):
+        data = json.dumps(golf_club.dict(), default=str)
         return await self.call_async(
             method="post",
             path="golf-club",
