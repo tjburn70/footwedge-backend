@@ -22,27 +22,11 @@ class SyncGolfClub(AbstractTask):
 
     def build_golf_club(self, golf_club_id: str) -> GolfClub:
         name = self.image["name"]["S"]
-        address = self._parse_attribute(key="address", data_type="S")
-        city = self._parse_attribute(key="city", data_type="S")
-        state_code = self._parse_attribute(key="state_code", data_type="S")
-        county = self._parse_attribute(key="county", data_type="S")
-        zip_code = self._parse_attribute(key="zip_code", data_type="S")
-        phone_number = self._parse_attribute(key="phone_number", data_type="S")
-        email = self._parse_attribute(key="email", data_type="S")
-        website = self._parse_attribute(key="website", data_type="S")
         created_ts = self._parse_attribute(key="created_ts", data_type="S")
         touched_ts = self._parse_attribute(key="touched", data_type="S")
         return GolfClub(
             golf_club_id=golf_club_id,
             golf_club_name=name,
-            address=address,
-            city=city,
-            state_code=state_code,
-            county=county,
-            zip_code=zip_code,
-            phone_number=phone_number,
-            email=email,
-            website=website,
             created_ts=created_ts,
             touched_ts=touched_ts,
         )
@@ -50,14 +34,10 @@ class SyncGolfClub(AbstractTask):
     def build_golf_course(self, golf_course_id: str) -> GolfCourse:
         name = self.image["name"]["S"]
         num_holes = self.image["num_holes"]["N"]
-        created_ts = self._parse_attribute(key="created_ts", data_type="S")
-        touched_ts = self._parse_attribute(key="touched", data_type="S")
         return GolfCourse(
             golf_course_id=golf_course_id,
             golf_course_name=name,
             num_holes=num_holes,
-            created_ts=created_ts,
-            touched_ts=touched_ts,
         )
 
     async def add_golf_club(self, api_client: FootwedgeSearchClient):
