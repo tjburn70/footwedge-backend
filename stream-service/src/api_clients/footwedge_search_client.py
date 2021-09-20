@@ -33,7 +33,7 @@ class SearchServiceApiClient:
         return json.dumps(data, default=str)
 
     async def call_async(self, method: str, path: str, **kwargs) -> Dict:
-        url = f"{settings.SEARCH_SERVICE_API_URL}/{path}"
+        url = f"{settings.FOOTWEDGE_SEARCH_URL}/{path}"
         logger.info(f"async requesting: {method} {url}")
         async with self.session.request(
             method,
