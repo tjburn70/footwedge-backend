@@ -2,7 +2,6 @@ import json
 from typing import Dict, Optional
 
 import aiohttp
-from pydantic import BaseModel
 
 from logger import get_logger
 from settings import settings
@@ -24,14 +23,6 @@ class FootwedgeSearchClient:
     async def __aexit__(self, exc_type, exc, traceback):
         await self.session.close()
 
-    @staticmethod
-    def serialize_document_payload(_id: str, model: BaseModel) -> str:
-        data = {
-            "_id": _id,
-            "payload": model.dict(),
-        }
-        return json.dumps(data, default=str)
-
     async def call_async(self, method: str, path: str, **kwargs) -> Dict:
         url = f"{settings.FOOTWEDGE_SEARCH_URL}/{path}"
         logger.info(f"async requesting: {method} {url}")
@@ -45,8 +36,8 @@ class FootwedgeSearchClient:
             logger.info(f"response body: {data}")
             return data
 
-    async def add_user(self, user_id: str, user: User):
-        data = self.serialize_document_payload(_id=user_id, model=user)
+    async def add_user(self, user: User):
+        data = json.dumps(user.dict(), default=str)
         return await self.call_async(
             method="post",
             path="user",
@@ -59,6 +50,7 @@ class FootwedgeSearchClient:
             method="post",
             path="golf-club",
             data=data,
+            headers={'content-type': 'application/json'}
         )
 
     async def add_golf_course(self, golf_club_id: str, golf_course: GolfCourse):
@@ -67,4 +59,5 @@ class FootwedgeSearchClient:
             method="patch",
             path=path,
             data=golf_course.json(),
+            headers={'content-type': 'application/json'}
         )
