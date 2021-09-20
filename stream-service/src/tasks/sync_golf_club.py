@@ -34,7 +34,7 @@ class SyncGolfClub(AbstractTask):
         touched_ts = self._parse_attribute(key="touched", data_type="S")
         return GolfClub(
             golf_club_id=golf_club_id,
-            name=name,
+            golf_club_name=name,
             address=address,
             city=city,
             state_code=state_code,
@@ -54,7 +54,7 @@ class SyncGolfClub(AbstractTask):
         touched_ts = self._parse_attribute(key="touched", data_type="S")
         return GolfCourse(
             golf_course_id=golf_course_id,
-            name=name,
+            golf_course_name=name,
             num_holes=num_holes,
             created_ts=created_ts,
             touched_ts=touched_ts,
