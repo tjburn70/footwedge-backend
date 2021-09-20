@@ -33,4 +33,4 @@ class SyncUser(AbstractTask):
         if self.event_name == "INSERT":
             async with FootwedgeSearchClient() as api_client:
                 user = self.build_user()
-                return await api_client.add_user(user_id=self.user_id, user=user)
+                return await api_client.add_user(user=user)
