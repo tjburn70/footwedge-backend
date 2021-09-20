@@ -9,21 +9,11 @@ class GolfCourse(BaseModel):
     golf_course_id: str
     golf_course_name: str
     num_holes: int
-    created_ts: str
-    touched_ts: Optional[str] = None
 
 
 class GolfClub(BaseModel):
     golf_club_id: str
     golf_club_name: str
-    address: Optional[str] = None
-    city: Optional[str] = None
-    state_code: Optional[str] = None
-    county: Optional[str] = None
-    zip_code: Optional[str] = None
-    phone_number: Optional[str] = None
-    email: Optional[str] = None
-    website: Optional[AnyHttpUrl] = None
     created_ts: str
     touched_ts: str = None
     golf_courses: List[GolfCourse] = []
