@@ -11,7 +11,7 @@ from footwedge_models import GolfClub, GolfCourse, User
 logger = get_logger(name=__name__)
 
 
-class SearchServiceApiClient:
+class FootwedgeSearchClient:
 
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
@@ -47,26 +47,24 @@ class SearchServiceApiClient:
 
     async def add_user(self, user_id: str, user: User):
         data = self.serialize_document_payload(_id=user_id, model=user)
-        path = "user/documents"
         return await self.call_async(
-            method="put",
-            path=path,
+            method="post",
+            path="user",
             data=data,
         )
 
     async def add_golf_club(self, golf_club_id: str, golf_club: GolfClub):
         data = self.serialize_document_payload(_id=golf_club_id, model=golf_club)
-        path = "golf_club/documents"
         return await self.call_async(
-            method="put",
-            path=path,
+            method="post",
+            path="golf-club",
             data=data,
         )
 
     async def add_golf_course(self, golf_club_id: str, golf_course: GolfCourse):
-        path = f"golf_club/documents/{golf_club_id}/add/golf_courses"
+        path = f"golf-club/{golf_club_id}/golf-course"
         return await self.call_async(
-            method="put",
+            method="patch",
             path=path,
             data=golf_course.json(),
         )
