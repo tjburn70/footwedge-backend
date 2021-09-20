@@ -1,5 +1,5 @@
 from .abstract_task import AbstractTask
-from api_clients.search_service_api_client import SearchServiceApiClient
+from api_clients.footwedge_search_client import FootwedgeSearchClient
 from config import GOLF_CLUB_TAG, GOLF_COURSE_TAG
 from footwedge_models import GolfClub, GolfCourse
 
@@ -60,7 +60,7 @@ class SyncGolfClub(AbstractTask):
             touched_ts=touched_ts,
         )
 
-    async def add_golf_club(self, api_client: SearchServiceApiClient):
+    async def add_golf_club(self, api_client: FootwedgeSearchClient):
         golf_club_id = self.partition_key.split(self.key_delimiter)[1]
         golf_club = self.build_golf_club(golf_club_id=golf_club_id)
         return await api_client.add_golf_club(
@@ -68,7 +68,7 @@ class SyncGolfClub(AbstractTask):
             golf_club=golf_club,
         )
 
-    async def add_golf_course(self, api_client: SearchServiceApiClient):
+    async def add_golf_course(self, api_client: FootwedgeSearchClient):
         golf_club_id = self.partition_key.split(self.key_delimiter)[1]
         golf_course_id = self.sort_key.split(self.key_delimiter)[1]
         golf_course = self.build_golf_course(golf_course_id=golf_course_id)
@@ -78,7 +78,7 @@ class SyncGolfClub(AbstractTask):
         )
 
     async def process_record(self):
-        async with SearchServiceApiClient() as api_client:
+        async with FootwedgeSearchClient() as api_client:
             if self.event_name in INSERT_AND_MODIFY_EVENTS:
                 tag = f"{self.pk_tag}{self.sk_tag}"
                 if tag == GOLF_CLUB_TAG:

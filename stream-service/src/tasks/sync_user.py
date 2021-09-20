@@ -1,5 +1,5 @@
 from .abstract_task import AbstractTask
-from api_clients.search_service_api_client import SearchServiceApiClient
+from api_clients.footwedge_search_client import FootwedgeSearchClient
 from footwedge_models import User
 
 
@@ -31,6 +31,6 @@ class SyncUser(AbstractTask):
 
     async def process_record(self):
         if self.event_name == "INSERT":
-            async with SearchServiceApiClient() as api_client:
+            async with FootwedgeSearchClient() as api_client:
                 user = self.build_user()
                 return await api_client.add_user(user_id=self.user_id, user=user)
