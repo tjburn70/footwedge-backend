@@ -23,7 +23,7 @@ class SyncGolfClub(AbstractTask):
     def build_golf_club(self, golf_club_id: str) -> GolfClub:
         name = self.image["name"]["S"]
         created_ts = self._parse_attribute(key="created_ts", data_type="S")
-        touched_ts = self._parse_attribute(key="touched", data_type="S")
+        touched_ts = self._parse_attribute(key="touched_ts", data_type="S")
         return GolfClub(
             golf_club_id=golf_club_id,
             golf_club_name=name,
