@@ -131,3 +131,7 @@ dmypy.json
 # Docker
 es-data/
 docker/
+
+# IntelliJ
+.DS_Store
+.idea/
