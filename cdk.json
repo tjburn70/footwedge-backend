@@ -1,0 +1,7 @@
+{
+    "app": "ts-node infrastructure/bin/footwedge-backend.ts",
+    "context": {
+        "REGION": "us-east-2",
+        "SERVICE_NAME": "footwedge-backend"
+    }
+}
