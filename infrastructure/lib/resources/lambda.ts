@@ -26,3 +26,25 @@ export function generateSearchServiceLambda(
 
   return searchServiceLambda
 }
+
+export function generatePostConfirmationLambda(
+  scope: cdk.Construct,
+  envName: string,
+  serviceName: string,
+): lambda.Function {
+  const id = 'post-confirmation-service'
+  return new lambda.Function(scope, id, {
+    runtime: lambda.Runtime.PYTHON_3_7,
+    code: lambda.Code.fromAsset(
+      path.join(__dirname, `../../../${id}/target`)
+    ),
+    handler: 'handler.lambda_handler',
+    functionName: `${envName}-${serviceName}-${id}`,
+    memorySize: 512,
+    timeout: cdk.Duration.minutes(2),
+    environment: {
+      FOOTWEDGE_API_URL: 'https://api.footwedge.io/v1',
+      ENV_NAME: envName,
+    }
+  })
+}

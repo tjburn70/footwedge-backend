@@ -1,6 +1,9 @@
 import { Stack, Construct } from '@aws-cdk/core'
 import { generateSearchServiceApi } from './resources/api'
-import { generateSearchServiceLambda } from './resources/lambda'
+import { 
+  generateSearchServiceLambda,
+  generatePostConfirmationLambda,
+} from './resources/lambda'
 
 export interface FootwedgeBackendStackProps {
   readonly env: string
@@ -28,5 +31,10 @@ export class FootwedgeBackendStack extends Stack {
       props.algoliaApiKey
     )
     generateSearchServiceApi(this, searchServiceLambda)
+    generatePostConfirmationLambda(
+      this,
+      props.env,
+      props.service,
+    )
   }
 }
