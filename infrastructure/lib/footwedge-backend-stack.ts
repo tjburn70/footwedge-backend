@@ -64,7 +64,7 @@ export class FootwedgeBackendStack extends Stack {
       golfRoundsReadScope,
       handicapWriteScope,
     )
-    const searchServiceClient = addScrapeServiceClient(
+    const scrapeServiceClient = addScrapeServiceClient(
       footwedgeUserPool,
       footwedgeCognitoResourceServer,
       golfClubWriteScope,
