@@ -4,13 +4,12 @@ import * as dynamo from '@aws-cdk/aws-dynamodb'
 
 export function generateTable(
     scope: cdk.Construct,
-    envName: string,
-    serviceName: string,
+    tableName: string,
     streamServiceLambda: lambda.Function,
     footwedgeApiLambda: lambda.Function,
 ): dynamo.Table {
     const table = new dynamo.Table(scope, 'FootwedgeTable', {
-        tableName: `${envName}-${serviceName}-table`,
+        tableName: tableName,
         partitionKey: { name: 'PK', type: dynamo.AttributeType.STRING },
         sortKey: { name: 'SK', type: dynamo.AttributeType.STRING },
         readCapacity: 1,
