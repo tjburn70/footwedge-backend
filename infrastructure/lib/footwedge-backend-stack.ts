@@ -1,6 +1,11 @@
 import { Stack, Construct } from '@aws-cdk/core'
-import { generateSearchServiceApi } from './resources/api'
-import { 
+import {
+  generateFootwedgeApi,
+  generateSearchServiceApi,
+} from './resources/api'
+import { generateTable } from './resources/dynamo'
+import {
+  generateFootwedgeApiLambda,
   generateSearchServiceLambda,
   generatePostConfirmationLambda,
 } from './resources/lambda'
@@ -23,6 +28,28 @@ export class FootwedgeBackendStack extends Stack {
         account: props.account,
       },
     })
+    const footwedgeTableName = `${props.env}-${props.service}-table`
+    const dynamoDbUrl = `https://dynamodb.${props.region}.amazonaws.com`
+    const footwedgeApiLambda = generateFootwedgeApiLambda(
+      this,
+      {
+        envName: props.env,
+        serviceName: props.service,
+        cognitoRegion: props.region,
+        cognitoUserPoolId: '',
+        cognitoWebClientId: '',
+        dynamoDbUrl: dynamoDbUrl,
+        footwedgeDynamoTableName: footwedgeTableName,
+      }
+    )
+    generateFootwedgeApi(this, footwedgeApiLambda)
+    
+    generateTable(
+      this,
+      footwedgeTableName,
+      footwedgeApiLambda,
+    )
+
     const searchServiceLambda = generateSearchServiceLambda(
       this,
       props.env,
