@@ -17,6 +17,7 @@ import {
   generateFootwedgeApiLambda,
   generateSearchServiceLambda,
   generatePostConfirmationLambda,
+  generateStreamServiceLambda,
 } from './resources/lambda'
 
 export interface FootwedgeBackendStackProps {
@@ -85,11 +86,24 @@ export class FootwedgeBackendStack extends Stack {
       }
     )
     generateFootwedgeApi(this, footwedgeApiLambda)
+
+    const streamServiceLambda = generateStreamServiceLambda(
+      this,
+      {
+        envName: props.env,
+        serviceName: props.service,
+        cognitoRegion: props.region,
+        cognitoDomain: footwedgeCognitoDomain.domainName,
+        streamServiceCognitoClientId: streamServiceClient.userPoolClientId,
+        streamServiceCognitoClientSecret: '',
+      }
+    )
     
     generateTable(
       this,
       footwedgeTableName,
       footwedgeApiLambda,
+      streamServiceLambda,
     )
 
     const searchServiceLambda = generateSearchServiceLambda(

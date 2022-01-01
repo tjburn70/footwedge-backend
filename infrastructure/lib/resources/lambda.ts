@@ -84,3 +84,38 @@ export function generatePostConfirmationLambda(
     }
   })
 }
+
+export interface StreamServiceProps {
+  envName: string,
+  serviceName: string,
+  cognitoDomain: string,
+  cognitoRegion: string,
+  streamServiceCognitoClientId: string,
+  streamServiceCognitoClientSecret: string,
+}
+
+export function generateStreamServiceLambda(
+  scope: cdk.Construct,
+  props: StreamServiceProps,
+): lambda.Function {
+  const id = 'stream-service'
+  return new lambda.Function(scope, id, {
+    runtime: lambda.Runtime.PYTHON_3_7,
+    code: lambda.Code.fromAsset(
+      path.join(__dirname, `../../../${id}/target`)
+    ),
+    handler: 'handler.lambda_handler',
+    functionName: `${props.envName}-${props.serviceName}-${id}`,
+    memorySize: 512,
+    timeout: cdk.Duration.minutes(2),
+    environment: {
+      ENV_NAME: props.envName,
+      COGNITO_DOMAIN: props.cognitoDomain,
+      COGNITO_REGION: props.cognitoRegion,
+      STREAM_SERVICE_COGNITO_CLIENT_ID: props.streamServiceCognitoClientId,
+      STREAM_SERVICE_COGNITO_CLIENT_SECRET: props.streamServiceCognitoClientSecret,
+      FOOTWEDGE_API_URL: 'https://api.footwedge.io/v1',
+      FOOTWEDGE_SEARCH_URL: 'https://search.footwedge.io',
+    }
+  })
+}
