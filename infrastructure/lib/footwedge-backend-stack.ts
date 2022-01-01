@@ -78,8 +78,8 @@ export class FootwedgeBackendStack extends Stack {
         envName: props.env,
         serviceName: props.service,
         cognitoRegion: props.region,
-        cognitoUserPoolId: '',
-        cognitoWebClientId: '',
+        cognitoUserPoolId: footwedgeUserPool.userPoolId,
+        cognitoWebClientId: footwedgeWebClient.userPoolClientId,
         dynamoDbUrl: dynamoDbUrl,
         footwedgeDynamoTableName: footwedgeTableName,
       }
