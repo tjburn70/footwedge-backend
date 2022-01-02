@@ -12,10 +12,10 @@ export function generateCognitoUserPool(
     userPoolName: `${envName}-footwedge`,
     selfSignUpEnabled: true,
     signInAliases: {
-      email: true
+      email: true,
     },
     autoVerify: {
-      email: true
+      email: true,
     },
     accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
     standardAttributes: {
@@ -30,7 +30,7 @@ export function generateCognitoUserPool(
       email: {
         required: true,
         mutable: false,
-      }
+      },
     },
     customAttributes: {
       'custom:firstName': new cognito.StringAttribute({ mutable: true }),
@@ -45,18 +45,18 @@ export function generateCognitoUserPool(
     },
     signInCaseSensitive: false,
     lambdaTriggers: {
-      postConfirmation: postConfirmationLambda
+      postConfirmation: postConfirmationLambda,
     },
   })
 }
 
 export function addDomain(
   userPool: cognito.UserPool,
-  envName: string,
+  envName: string
 ): cognito.UserPoolDomain {
   return userPool.addDomain('CognitoDomain', {
     cognitoDomain: {
-      domainPrefix: `${envName}-footwedge`
+      domainPrefix: `${envName}-footwedge`,
     },
   })
 }
@@ -72,25 +72,19 @@ export function addResourceServer(
   userPool: cognito.UserPool,
   golfRoundsReadScope: cognito.ResourceServerScope,
   handicapWriteScope: cognito.ResourceServerScope,
-  golfClubWriteScope: cognito.ResourceServerScope,
+  golfClubWriteScope: cognito.ResourceServerScope
 ): cognito.UserPoolResourceServer {
-  return userPool.addResourceServer(
-    'FootwedgeUserPoolResourceServer', {
-      identifier: 'footwedge-api',
-      scopes: [
-        golfRoundsReadScope,
-        handicapWriteScope,
-        golfClubWriteScope
-      ],
-    }
-  )
+  return userPool.addResourceServer('FootwedgeUserPoolResourceServer', {
+    identifier: 'footwedge-api',
+    scopes: [golfRoundsReadScope, handicapWriteScope, golfClubWriteScope],
+  })
 }
 
 export function addWebClient(
-  userPool: cognito.UserPool,
+  userPool: cognito.UserPool
 ): cognito.UserPoolClient {
   return userPool.addClient('WebClient', {
-    userPoolClientName: 'footwedge-web'
+    userPoolClientName: 'footwedge-web',
   })
 }
 
@@ -98,7 +92,7 @@ export function addStreamServiceClient(
   userPool: cognito.UserPool,
   resourceServer: cognito.UserPoolResourceServer,
   golfRoundsReadScope: cognito.ResourceServerScope,
-  handicapWriteScope: cognito.ResourceServerScope,
+  handicapWriteScope: cognito.ResourceServerScope
 ): cognito.UserPoolClient {
   return userPool.addClient('WebClient', {
     oAuth: {
@@ -111,14 +105,14 @@ export function addStreamServiceClient(
       ],
     },
     generateSecret: true,
-    userPoolClientName: 'stream-service'
+    userPoolClientName: 'stream-service',
   })
 }
 
 export function addScrapeServiceClient(
   userPool: cognito.UserPool,
   resourceServer: cognito.UserPoolResourceServer,
-  golfClubWriteScope: cognito.ResourceServerScope,
+  golfClubWriteScope: cognito.ResourceServerScope
 ): cognito.UserPoolClient {
   return userPool.addClient('WebClient', {
     oAuth: {
@@ -126,10 +120,10 @@ export function addScrapeServiceClient(
         clientCredentials: true,
       },
       scopes: [
-        cognito.OAuthScope.resourceServer(resourceServer, golfClubWriteScope)
+        cognito.OAuthScope.resourceServer(resourceServer, golfClubWriteScope),
       ],
     },
     generateSecret: true,
-    userPoolClientName: 'scrape-service'
+    userPoolClientName: 'scrape-service',
   })
 }

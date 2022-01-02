@@ -1,8 +1,5 @@
 import { Stack, Construct } from '@aws-cdk/core'
-import {
-  generateFootwedgeApi,
-  generateSearchServiceApi,
-} from './resources/api'
+import { generateFootwedgeApi, generateSearchServiceApi } from './resources/api'
 import {
   generateCognitoUserPool,
   addDomain,
@@ -41,70 +38,73 @@ export class FootwedgeBackendStack extends Stack {
     const postConfirmationLambda = generatePostConfirmationLambda(
       this,
       props.env,
-      props.service,
+      props.service
     )
     const footwedgeUserPool = generateCognitoUserPool(
       this,
       props.env,
-      postConfirmationLambda,
+      postConfirmationLambda
     )
     const footwedgeCognitoDomain = addDomain(footwedgeUserPool, props.env)
-    const golfRoundsReadScope = generateScope('golf-rounds.read', 'Read user golf-rounds')
-    const handicapWriteScope = generateScope('handicap.write', 'Write user handicap')
-    const golfClubWriteScope = generateScope('golf-clubs.write', 'Write golf clubs')
+    const golfRoundsReadScope = generateScope(
+      'golf-rounds.read',
+      'Read user golf-rounds'
+    )
+    const handicapWriteScope = generateScope(
+      'handicap.write',
+      'Write user handicap'
+    )
+    const golfClubWriteScope = generateScope(
+      'golf-clubs.write',
+      'Write golf clubs'
+    )
     const footwedgeCognitoResourceServer = addResourceServer(
       footwedgeUserPool,
       golfRoundsReadScope,
       handicapWriteScope,
-      golfClubWriteScope,
+      golfClubWriteScope
     )
     const footwedgeWebClient = addWebClient(footwedgeUserPool)
     const streamServiceClient = addStreamServiceClient(
       footwedgeUserPool,
       footwedgeCognitoResourceServer,
       golfRoundsReadScope,
-      handicapWriteScope,
+      handicapWriteScope
     )
     const scrapeServiceClient = addScrapeServiceClient(
       footwedgeUserPool,
       footwedgeCognitoResourceServer,
-      golfClubWriteScope,
+      golfClubWriteScope
     )
 
     const footwedgeTableName = `${props.env}-${props.service}-table`
     const dynamoDbUrl = `https://dynamodb.${props.region}.amazonaws.com`
-    const footwedgeApiLambda = generateFootwedgeApiLambda(
-      this,
-      {
-        envName: props.env,
-        serviceName: props.service,
-        cognitoRegion: props.region,
-        cognitoUserPoolId: footwedgeUserPool.userPoolId,
-        cognitoWebClientId: footwedgeWebClient.userPoolClientId,
-        dynamoDbUrl: dynamoDbUrl,
-        footwedgeDynamoTableName: footwedgeTableName,
-      }
-    )
+    const footwedgeApiLambda = generateFootwedgeApiLambda(this, {
+      envName: props.env,
+      serviceName: props.service,
+      cognitoRegion: props.region,
+      cognitoUserPoolId: footwedgeUserPool.userPoolId,
+      cognitoWebClientId: footwedgeWebClient.userPoolClientId,
+      dynamoDbUrl: dynamoDbUrl,
+      footwedgeDynamoTableName: footwedgeTableName,
+    })
     generateFootwedgeApi(this, footwedgeApiLambda)
 
     const footwedgeTable = generateTable(
       this,
       footwedgeTableName,
-      footwedgeApiLambda,
+      footwedgeApiLambda
     )
 
-    const streamServiceLambda = generateStreamServiceLambda(
-      this,
-      {
-        envName: props.env,
-        serviceName: props.service,
-        cognitoRegion: props.region,
-        cognitoDomain: footwedgeCognitoDomain.domainName,
-        streamServiceCognitoClientId: streamServiceClient.userPoolClientId,
-        streamServiceCognitoClientSecret: '',
-        footwedgeTable: footwedgeTable
-      }
-    )
+    const streamServiceLambda = generateStreamServiceLambda(this, {
+      envName: props.env,
+      serviceName: props.service,
+      cognitoRegion: props.region,
+      cognitoDomain: footwedgeCognitoDomain.domainName,
+      streamServiceCognitoClientId: streamServiceClient.userPoolClientId,
+      streamServiceCognitoClientSecret: '',
+      footwedgeTable: footwedgeTable,
+    })
 
     footwedgeTable.grantStream(streamServiceLambda)
 

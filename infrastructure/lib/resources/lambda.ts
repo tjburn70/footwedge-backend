@@ -5,13 +5,13 @@ import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources'
 import * as path from 'path'
 
 export interface FootwedgeApiProps {
-  envName: string,
-  serviceName: string,
-  cognitoRegion: string,
-  cognitoUserPoolId: string,
-  cognitoWebClientId: string,
-  dynamoDbUrl: string,
-  footwedgeDynamoTableName: string,
+  envName: string
+  serviceName: string
+  cognitoRegion: string
+  cognitoUserPoolId: string
+  cognitoWebClientId: string
+  dynamoDbUrl: string
+  footwedgeDynamoTableName: string
 }
 
 export function generateFootwedgeApiLambda(
@@ -21,9 +21,7 @@ export function generateFootwedgeApiLambda(
   const id = 'footwedge-api'
   return new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
-    code: lambda.Code.fromAsset(
-      path.join(__dirname, `../../../${id}/target`)
-    ),
+    code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
     handler: 'handler.lambda_handler',
     functionName: `${props.envName}-${props.serviceName}-${id}`,
     memorySize: 512,
@@ -36,7 +34,7 @@ export function generateFootwedgeApiLambda(
       COGNITO_WEB_CLIENT_ID: props.cognitoWebClientId,
       DYNAMO_DB_URL: props.dynamoDbUrl,
       FOOTWEDGE_DYNAMO_TABLE: props.footwedgeDynamoTableName,
-    }
+    },
   })
 }
 
@@ -68,14 +66,12 @@ export function generateSearchServiceLambda(
 export function generatePostConfirmationLambda(
   scope: cdk.Construct,
   envName: string,
-  serviceName: string,
+  serviceName: string
 ): lambda.Function {
   const id = 'post-confirmation-service'
   return new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
-    code: lambda.Code.fromAsset(
-      path.join(__dirname, `../../../${id}/target`)
-    ),
+    code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
     handler: 'handler.lambda_handler',
     functionName: `${envName}-${serviceName}-${id}`,
     memorySize: 512,
@@ -83,30 +79,28 @@ export function generatePostConfirmationLambda(
     environment: {
       FOOTWEDGE_API_URL: 'https://api.footwedge.io/v1',
       ENV_NAME: envName,
-    }
+    },
   })
 }
 
 export interface StreamServiceProps {
-  envName: string,
-  serviceName: string,
-  cognitoDomain: string,
-  cognitoRegion: string,
-  streamServiceCognitoClientId: string,
-  streamServiceCognitoClientSecret: string,
-  footwedgeTable: dynamo.Table,
+  envName: string
+  serviceName: string
+  cognitoDomain: string
+  cognitoRegion: string
+  streamServiceCognitoClientId: string
+  streamServiceCognitoClientSecret: string
+  footwedgeTable: dynamo.Table
 }
 
 export function generateStreamServiceLambda(
   scope: cdk.Construct,
-  props: StreamServiceProps,
+  props: StreamServiceProps
 ): lambda.Function {
   const id = 'stream-service'
   const fn = new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
-    code: lambda.Code.fromAsset(
-      path.join(__dirname, `../../../${id}/target`)
-    ),
+    code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
     handler: 'handler.lambda_handler',
     functionName: `${props.envName}-${props.serviceName}-${id}`,
     memorySize: 512,
@@ -116,17 +110,20 @@ export function generateStreamServiceLambda(
       COGNITO_DOMAIN: props.cognitoDomain,
       COGNITO_REGION: props.cognitoRegion,
       STREAM_SERVICE_COGNITO_CLIENT_ID: props.streamServiceCognitoClientId,
-      STREAM_SERVICE_COGNITO_CLIENT_SECRET: props.streamServiceCognitoClientSecret,
+      STREAM_SERVICE_COGNITO_CLIENT_SECRET:
+        props.streamServiceCognitoClientSecret,
       FOOTWEDGE_API_URL: 'https://api.footwedge.io/v1',
       FOOTWEDGE_SEARCH_URL: 'https://search.footwedge.io',
-    }
+    },
   })
-  fn.addEventSource(new DynamoEventSource(props.footwedgeTable, {
-    startingPosition: lambda.StartingPosition.TRIM_HORIZON,
-    batchSize: 5,
-    bisectBatchOnError: true,
-    // onFailure: new SqsDlq(deadLetterQueue),
-    retryAttempts: 5,
-  }))
+  fn.addEventSource(
+    new DynamoEventSource(props.footwedgeTable, {
+      startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+      batchSize: 5,
+      bisectBatchOnError: true,
+      // onFailure: new SqsDlq(deadLetterQueue),
+      retryAttempts: 5,
+    })
+  )
   return fn
 }
