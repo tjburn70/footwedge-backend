@@ -5,8 +5,9 @@ from v1.constants import HANDICAP_TAG
 
 
 class HandicapRepository(BaseRepository):
-
-    def get_user_handicaps(self, partition_key: str, scan_index_forward: bool = False) -> dict:
+    def get_user_handicaps(
+        self, partition_key: str, scan_index_forward: bool = False
+    ) -> dict:
         """
         Retrieve all handicap items for a user. Default is to order by created_ts desc.
         :param partition_key:
@@ -14,8 +15,9 @@ class HandicapRepository(BaseRepository):
         :return:
         """
         return self.table.query(
-            KeyConditionExpression=Key('pk').eq(partition_key) & Key('sk').begins_with(HANDICAP_TAG),
-            ScanIndexForward=scan_index_forward
+            KeyConditionExpression=Key("pk").eq(partition_key)
+            & Key("sk").begins_with(HANDICAP_TAG),
+            ScanIndexForward=scan_index_forward,
         )
 
 

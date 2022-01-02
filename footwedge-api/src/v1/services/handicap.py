@@ -22,7 +22,6 @@ from v1.models.responses import (
 
 
 class HandicapService:
-
     def __init__(self, repo: HandicapRepository):
         self.repo = repo
 
@@ -31,36 +30,34 @@ class HandicapService:
         return f"{USER_TAG}{_key}"
 
     def add_handicap(
-            self,
-            handicap_body: HandicapBody,
-            user_id: str
+        self, handicap_body: HandicapBody, user_id: str
     ) -> PostHandicapResponse:
         partition_key = self._tag_key(_key=user_id)
         created_ts = datetime.utcnow().isoformat()
         sort_key = f"{HANDICAP_TAG}{created_ts}"
         handicap_id = str(uuid.uuid4())
         item = {
-            'pk': partition_key,
-            'sk': sort_key,
-            'handicap_id': handicap_id,
-            'index': handicap_body.index,
-            'authorized_association': handicap_body.authorized_association,
-            'created_ts': created_ts,
+            "pk": partition_key,
+            "sk": sort_key,
+            "handicap_id": handicap_id,
+            "index": handicap_body.index,
+            "authorized_association": handicap_body.authorized_association,
+            "created_ts": created_ts,
         }
         response = self.repo.add(item=item)
         validate_response(response)
         uri = f"/{API_VERSION}/handicaps/"
         handicap = Handicap(**item)
         return PostHandicapResponse(
-            status="success",
-            data=handicap,
-            metadata=FootwedgeApiMetadata(uri=uri)
+            status="success", data=handicap, metadata=FootwedgeApiMetadata(uri=uri)
         )
 
     def get_active_handicap(self, user_id: str) -> GetActiveHandicapResponse:
         partition_key = self._tag_key(_key=user_id)
-        response = self.repo.get_user_handicaps(partition_key=partition_key, scan_index_forward=False)
-        items = response.get('Items')
+        response = self.repo.get_user_handicaps(
+            partition_key=partition_key, scan_index_forward=False
+        )
+        items = response.get("Items")
         if items:
             active_handicap = Handicap(**items[0])
             return GetActiveHandicapResponse(
@@ -75,8 +72,10 @@ class HandicapService:
 
     def get_all_handicaps(self, user_id: str) -> GetHandicapsResponse:
         partition_key = self._tag_key(_key=user_id)
-        response = self.repo.get_user_handicaps(partition_key=partition_key, scan_index_forward=False)
-        items = response.get('Items')
+        response = self.repo.get_user_handicaps(
+            partition_key=partition_key, scan_index_forward=False
+        )
+        items = response.get("Items")
         if items:
             handicaps = [Handicap(**item) for item in items]
             return GetHandicapsResponse(

@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 class HandicapBody(BaseModel):
     index: Decimal
-    authorized_association: Optional[str] = 'USGA'
+    authorized_association: Optional[str] = "USGA"
 
 
 class Handicap(HandicapBody):

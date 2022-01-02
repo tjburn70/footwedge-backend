@@ -12,17 +12,17 @@ from v1.models.responses import (
 from v1.repositories.user_repository import user_repo
 from v1.services.user import UserService
 
-PATH_PREFIX = 'users'
+PATH_PREFIX = "users"
 router = APIRouter()
 
 
-@router.post('/', response_model=PostUserResponse)
+@router.post("/", response_model=PostUserResponse)
 def add_user(user_body: UserBody):
     service = UserService(repo=user_repo)
     return service.add_user(user_body)
 
 
-@router.get('/me', response_model=GetUserResponse)
+@router.get("/me", response_model=GetUserResponse)
 def get_user(user: CognitoUser = Depends(get_current_user)):
     user_id = user.username
     service = UserService(repo=user_repo)

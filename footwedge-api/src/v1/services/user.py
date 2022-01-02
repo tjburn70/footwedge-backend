@@ -20,7 +20,6 @@ from v1.models.responses import (
 
 
 class UserService:
-
     def __init__(self, repo: UserRepository):
         self.repo = repo
 
@@ -36,18 +35,15 @@ class UserService:
             sort_key=sort_key,
         )
         # TODO: validate response metadata
-        item = response.get('Item')
+        item = response.get("Item")
         if item:
             user = User(**item)
-            return GetUserResponse(
-                status=Status.success,
-                data=user
-            )
+            return GetUserResponse(status=Status.success, data=user)
 
         return GetUserResponse(
             status=Status.success,
             data=None,
-            message=f"No golf club found with id: {user_id}"
+            message=f"No golf club found with id: {user_id}",
         )
 
     def add_user(self, user_body: UserBody) -> PostUserResponse:
@@ -59,18 +55,12 @@ class UserService:
             "sk": sort_key,
             "created_ts": created_ts.isoformat(),
             "touched_ts": None,
-            **user_body.dict()
+            **user_body.dict(),
         }
         response = self.repo.add(item=item)
         validate_response(response)
         uri = f"/{API_VERSION}/users/me"
-        user = User(
-            created_ts=created_ts,
-            touched_ts=None,
-            **user_body.dict()
-        )
+        user = User(created_ts=created_ts, touched_ts=None, **user_body.dict())
         return PostUserResponse(
-            status=Status.success,
-            data=user,
-            metadata=FootwedgeApiMetadata(uri=uri)
+            status=Status.success, data=user, metadata=FootwedgeApiMetadata(uri=uri)
         )

@@ -16,23 +16,23 @@ from v1.models.responses import (
 from v1.repositories.golf_club_repository import golf_club_repo
 from v1.services.golf_club import GolfClubService
 
-PATH_PREFIX = 'golf-clubs'
+PATH_PREFIX = "golf-clubs"
 router = APIRouter()
 
 
-@router.get('/{golf_club_id}', response_model=GetGolfClubResponse)
+@router.get("/{golf_club_id}", response_model=GetGolfClubResponse)
 def get_golf_club(golf_club_id: str):
     service = GolfClubService(repo=golf_club_repo)
     return service.get_golf_club(golf_club_id=golf_club_id)
 
 
-@router.post('/', response_model=PostGolfClubResponse)
+@router.post("/", response_model=PostGolfClubResponse)
 def add_golf_club(golf_club: GolfClubBody):
     service = GolfClubService(repo=golf_club_repo)
     return service.add_golf_club(golf_club_body=golf_club)
 
 
-@router.post('/{golf_club_id}/golf-courses', response_model=PostGolfCourseResponse)
+@router.post("/{golf_club_id}/golf-courses", response_model=PostGolfCourseResponse)
 def add_golf_course(golf_club_id: str, golf_course: GolfCourseBody):
     service = GolfClubService(repo=golf_club_repo)
     return service.add_golf_course(
@@ -41,7 +41,7 @@ def add_golf_course(golf_club_id: str, golf_course: GolfCourseBody):
     )
 
 
-@router.get('/{golf_club_id}/golf-courses', response_model=GetGolfCoursesResponse)
+@router.get("/{golf_club_id}/golf-courses", response_model=GetGolfCoursesResponse)
 def get_golf_courses(golf_club_id: str):
     service = GolfClubService(repo=golf_club_repo)
     return service.get_golf_courses(
@@ -49,7 +49,10 @@ def get_golf_courses(golf_club_id: str):
     )
 
 
-@router.get('/{golf_club_id}/golf-courses/{golf_course_id}', response_model=GetGolfCourseResponse)
+@router.get(
+    "/{golf_club_id}/golf-courses/{golf_course_id}",
+    response_model=GetGolfCourseResponse,
+)
 def get_golf_course(golf_club_id: str, golf_course_id: str):
     service = GolfClubService(repo=golf_club_repo)
     return service.get_golf_course(

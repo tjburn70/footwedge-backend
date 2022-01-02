@@ -39,7 +39,6 @@ logger = get_logger(__name__)
 
 
 class GolfRoundService:
-
     def __init__(self, repo: GolfRoundRepository, user: Optional[CognitoUser] = None):
         self.repo = repo
         self.user = user
@@ -49,8 +48,8 @@ class GolfRoundService:
         return f"{USER_TAG}{_key}"
 
     def add_golf_round(
-            self,
-            golf_round_body: GolfRoundBody,
+        self,
+        golf_round_body: GolfRoundBody,
     ) -> PostGolfRoundResponse:
         partition_key = self._tag_key(_key=self.user.username)
         golf_round_id = str(uuid.uuid4())
@@ -58,49 +57,47 @@ class GolfRoundService:
         created_ts = datetime.now()
         stats = [
             {
-                'golf_round_stat_id': str(uuid.uuid4()),
-                'created_ts': created_ts.isoformat(),
-                'touched_ts': None,
-                **stat.dict()
+                "golf_round_stat_id": str(uuid.uuid4()),
+                "created_ts": created_ts.isoformat(),
+                "touched_ts": None,
+                **stat.dict(),
             }
             for stat in golf_round_body.stats
         ]
-        played_on = golf_round_body.played_on.isoformat() if golf_round_body.played_on else None
+        played_on = (
+            golf_round_body.played_on.isoformat() if golf_round_body.played_on else None
+        )
         item = {
-            'pk': partition_key,
-            'sk': sort_key,
-            'golf_round_id': golf_round_id,
-            'created_ts': created_ts.isoformat(),
-            'touched_ts': None,
-            'stats': stats,
-            'golf_club_id': golf_round_body.golf_club_id,
-            'golf_club_name': golf_round_body.golf_club_name,
-            'golf_course_id': golf_round_body.golf_course_id,
-            'golf_course_name': golf_round_body.golf_course_name,
-            'tee_box_id': golf_round_body.tee_box_id,
-            'tee_box_distance': golf_round_body.tee_box_distance,
-            'tee_box_color': golf_round_body.tee_box_color,
-            'tee_box_course_rating': golf_round_body.tee_box_course_rating,
-            'tee_box_par': golf_round_body.tee_box_par,
-            'round_type': golf_round_body.round_type,
-            'gross_score': golf_round_body.gross_score,
-            'towards_handicap': golf_round_body.towards_handicap,
-            'played_on': played_on,
+            "pk": partition_key,
+            "sk": sort_key,
+            "golf_round_id": golf_round_id,
+            "created_ts": created_ts.isoformat(),
+            "touched_ts": None,
+            "stats": stats,
+            "golf_club_id": golf_round_body.golf_club_id,
+            "golf_club_name": golf_round_body.golf_club_name,
+            "golf_course_id": golf_round_body.golf_course_id,
+            "golf_course_name": golf_round_body.golf_course_name,
+            "tee_box_id": golf_round_body.tee_box_id,
+            "tee_box_distance": golf_round_body.tee_box_distance,
+            "tee_box_color": golf_round_body.tee_box_color,
+            "tee_box_course_rating": golf_round_body.tee_box_course_rating,
+            "tee_box_par": golf_round_body.tee_box_par,
+            "round_type": golf_round_body.round_type,
+            "gross_score": golf_round_body.gross_score,
+            "towards_handicap": golf_round_body.towards_handicap,
+            "played_on": played_on,
         }
         response = self.repo.add(item=item)
         validate_response(response)
         uri = f"/{API_VERSION}/golf-rounds/{golf_round_id}"
         golf_round = GolfRound(**item)
         return PostGolfRoundResponse(
-            status="success",
-            data=golf_round,
-            metadata=FootwedgeApiMetadata(uri=uri)
+            status="success", data=golf_round, metadata=FootwedgeApiMetadata(uri=uri)
         )
 
     def add_golf_round_stat(
-            self,
-            golf_round_id: str,
-            golf_round_stat_body: GolfRoundStatBody
+        self, golf_round_id: str, golf_round_stat_body: GolfRoundStatBody
     ) -> PutGolfRoundStatResponse:
         partition_key = self._tag_key(_key=self.user.username)
         sort_key = f"{GOLF_ROUND_TAG}{golf_round_id}"
@@ -110,24 +107,20 @@ class GolfRoundService:
             stat=golf_round_stat_body,
         )
         validate_response(response)
-        golf_round = GolfRound(**response['Attributes'])
+        golf_round = GolfRound(**response["Attributes"])
         uri = f"/{API_VERSION}/golf-rounds/{golf_round_id}"
         return PutGolfRoundStatResponse(
-            status="success",
-            data=golf_round,
-            metadata=FootwedgeApiMetadata(uri=uri)
+            status="success", data=golf_round, metadata=FootwedgeApiMetadata(uri=uri)
         )
 
     def get_golf_rounds(self) -> GetGolfRoundsResponse:
         partition_key = self._tag_key(_key=self.user.username)
         response = self.repo.get_golf_rounds(partition_key=partition_key)
-        items = response.get('Items')
+        items = response.get("Items")
         if items:
             golf_rounds = [GolfRound(**item) for item in items]
             sorted_golf_rounds = sorted(
-                golf_rounds,
-                key=lambda golf_round: golf_round.played_on,
-                reverse=True
+                golf_rounds, key=lambda golf_round: golf_round.played_on, reverse=True
             )
             return GetGolfRoundsResponse(
                 status=Status.success,
@@ -136,13 +129,13 @@ class GolfRoundService:
         return GetGolfRoundsResponse(
             status=Status.success,
             data=[],
-            message=f"No golf rounds found for user with id: {self.user.username}"
+            message=f"No golf rounds found for user with id: {self.user.username}",
         )
 
     def get_golf_rounds_by_user_id(self, user_id: str) -> GetGolfRoundsResponse:
         partition_key = self._tag_key(_key=user_id)
         response = self.repo.get_golf_rounds(partition_key=partition_key)
-        items = response.get('Items')
+        items = response.get("Items")
         if items:
             golf_rounds = [GolfRound(**item) for item in items]
             return GetGolfRoundsResponse(
@@ -152,7 +145,7 @@ class GolfRoundService:
         return GetGolfRoundsResponse(
             status=Status.success,
             data=[],
-            message=f"No golf rounds found for user with id: {user_id}"
+            message=f"No golf rounds found for user with id: {user_id}",
         )
 
     def get_golf_round(self, golf_round_id: str) -> GetGolfRoundResponse:
@@ -162,7 +155,7 @@ class GolfRoundService:
             partition_key=partition_key,
             sort_key=sort_key,
         )
-        item = response.get('Item')
+        item = response.get("Item")
         if item:
             return GetGolfRoundResponse(
                 status=Status.success,
@@ -171,11 +164,13 @@ class GolfRoundService:
         return GetGolfRoundResponse(
             status=Status.success,
             data=None,
-            message=f"No golf_round found with {golf_round_id}"
+            message=f"No golf_round found with {golf_round_id}",
         )
 
     @staticmethod
-    def calculate_up_and_downs(stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]) -> int:
+    def calculate_up_and_downs(
+        stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]
+    ) -> int:
         up_and_downs = 0
         for stat in stats:
             hole = hole_id_to_hole.get(stat.hole_id)
@@ -188,7 +183,9 @@ class GolfRoundService:
         return up_and_downs
 
     @staticmethod
-    def calculate_sand_saves(stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]) -> int:
+    def calculate_sand_saves(
+        stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]
+    ) -> int:
         sand_saves = 0
         for stat in stats:
             hole = hole_id_to_hole.get(stat.hole_id)
@@ -196,12 +193,18 @@ class GolfRoundService:
                 logger.info(f"No hole found with id: {stat.hole_id}")
                 continue
 
-            if stat.gross_score == hole.par and stat.putts == 1 and stat.greenside_sand_shots == 1:
+            if (
+                stat.gross_score == hole.par
+                and stat.putts == 1
+                and stat.greenside_sand_shots == 1
+            ):
                 sand_saves += 1
         return sand_saves
 
     @staticmethod
-    def calculate_birdies(stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]) -> int:
+    def calculate_birdies(
+        stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]
+    ) -> int:
         birdies = 0
         for stat in stats:
             hole = hole_id_to_hole.get(stat.hole_id)
@@ -214,7 +217,9 @@ class GolfRoundService:
         return birdies
 
     @staticmethod
-    def calculate_pars(stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]) -> int:
+    def calculate_pars(
+        stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]
+    ) -> int:
         pars = 0
         for stat in stats:
             hole = hole_id_to_hole.get(stat.hole_id)
@@ -227,7 +232,9 @@ class GolfRoundService:
         return pars
 
     @staticmethod
-    def calculate_bogeys(stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]) -> int:
+    def calculate_bogeys(
+        stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]
+    ) -> int:
         bogeys = 0
         for stat in stats:
             hole = hole_id_to_hole.get(stat.hole_id)
@@ -240,7 +247,9 @@ class GolfRoundService:
         return bogeys
 
     @staticmethod
-    def calculate_double_bogeys(stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]) -> int:
+    def calculate_double_bogeys(
+        stats: List[GolfRoundStat], hole_id_to_hole: Dict[str, GolfHole]
+    ) -> int:
         double_bogeys = 0
         for stat in stats:
             hole = hole_id_to_hole.get(stat.hole_id)
@@ -252,14 +261,20 @@ class GolfRoundService:
                 double_bogeys += 1
         return double_bogeys
 
-    def summarize_golf_round(self, golf_round: dict) -> Optional[GolfRoundAggregateStats]:
-        stats = [GolfRoundStat(**stat) for stat in golf_round['stats'] if golf_round.get('stats')]
+    def summarize_golf_round(
+        self, golf_round: dict
+    ) -> Optional[GolfRoundAggregateStats]:
+        stats = [
+            GolfRoundStat(**stat)
+            for stat in golf_round["stats"]
+            if golf_round.get("stats")
+        ]
         if not stats:
             return
 
         golf_course_service = GolfCourseService(repo=golf_course_repo)
-        golf_course_id = golf_round.get('golf_course_id', "")
-        tee_box_id = golf_round.get('tee_box_id', "")
+        golf_course_id = golf_round.get("golf_course_id", "")
+        tee_box_id = golf_round.get("tee_box_id", "")
         hole_id_to_hole = golf_course_service.map_golf_hole_by_id(
             golf_course_id=golf_course_id,
             tee_box_id=tee_box_id,
@@ -270,8 +285,12 @@ class GolfRoundService:
 
         putts = reduce(total(), [stat.putts for stat in stats])
         fairways = reduce(total(), [stat.fairway_hit for stat in stats])
-        greens_in_regulation = reduce(total(), [stat.green_in_regulation for stat in stats])
-        penalties = reduce(total(), [stat.penalties for stat in stats if stat.penalties])
+        greens_in_regulation = reduce(
+            total(), [stat.green_in_regulation for stat in stats]
+        )
+        penalties = reduce(
+            total(), [stat.penalties for stat in stats if stat.penalties]
+        )
         three_putts = reduce(total(), [1 for stat in stats if stat.putts >= 3])
         up_and_downs = self.calculate_up_and_downs(stats, hole_id_to_hole)
         sand_saves = self.calculate_sand_saves(stats, hole_id_to_hole)
@@ -293,14 +312,16 @@ class GolfRoundService:
             double_bogeys=double_bogeys,
         )
 
-    def aggregate_golf_round_stats(self, golf_round_id: str) -> GetGolfRoundAggregateStats:
+    def aggregate_golf_round_stats(
+        self, golf_round_id: str
+    ) -> GetGolfRoundAggregateStats:
         partition_key = self._tag_key(_key=self.user.username)
         sort_key = f"{GOLF_ROUND_TAG}{golf_round_id}"
         response = self.repo.get(
             partition_key=partition_key,
             sort_key=sort_key,
         )
-        item = response.get('Item')
+        item = response.get("Item")
         if item:
             aggregate_stats = self.summarize_golf_round(golf_round=item)
             return GetGolfRoundAggregateStats(
@@ -310,16 +331,16 @@ class GolfRoundService:
         return GetGolfRoundAggregateStats(
             status=Status.success,
             data=None,
-            message=f"No golf_round found with {golf_round_id}"
+            message=f"No golf_round found with {golf_round_id}",
         )
 
     def map_round_id_to_aggregate_stats(self):
         partition_key = self._tag_key(_key=self.user.username)
         response = self.repo.get_golf_rounds(partition_key=partition_key)
-        items = response.get('Items')
+        items = response.get("Items")
         if items:
             round_id_to_aggregate_stats = {
-                item['golf_round_id']: self.summarize_golf_round(golf_round=item)
+                item["golf_round_id"]: self.summarize_golf_round(golf_round=item)
                 for item in items
             }
             return GetGolfRoundsAggregateStats(
@@ -329,5 +350,5 @@ class GolfRoundService:
         return GetGolfRoundsAggregateStats(
             status=Status.success,
             data=None,
-            message=f"User has no golf rounds to aggregate"
+            message=f"User has no golf rounds to aggregate",
         )

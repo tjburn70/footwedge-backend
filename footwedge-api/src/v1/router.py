@@ -1,13 +1,6 @@
 from fastapi import APIRouter
 
-from .endpoints import (
-    golf_club,
-    golf_course,
-    golf_round,
-    handicap,
-    health,
-    user
-)
+from .endpoints import golf_club, golf_course, golf_round, handicap, health, user
 
 v1__router = APIRouter()
 v1__router.include_router(health.router)

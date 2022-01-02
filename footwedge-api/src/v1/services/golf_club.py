@@ -28,7 +28,6 @@ from v1.models.responses import (
 
 
 class GolfClubService:
-
     def __init__(self, repo: GolfClubRepository):
         self.repo = repo
 
@@ -44,18 +43,15 @@ class GolfClubService:
             sort_key=sort_key,
         )
         # TODO: validate response metadata
-        item = response.get('Item')
+        item = response.get("Item")
         if item:
             golf_club = GolfClub(**item)
-            return GetGolfClubResponse(
-                status=Status.success,
-                data=golf_club
-            )
+            return GetGolfClubResponse(status=Status.success, data=golf_club)
 
         return GetGolfClubResponse(
             status=Status.success,
             data=None,
-            message=f"No golf club found with id: {golf_club_id}"
+            message=f"No golf club found with id: {golf_club_id}",
         )
 
     def add_golf_club(self, golf_club_body: GolfClubBody) -> PostGolfClubResponse:
@@ -69,7 +65,7 @@ class GolfClubService:
             "golf_club_id": golf_club_id,
             "created_ts": created_ts.isoformat(),
             "touched_ts": None,
-            **golf_club_body.dict()
+            **golf_club_body.dict(),
         }
         response = self.repo.add(item=item)
         validate_response(response)
@@ -78,18 +74,16 @@ class GolfClubService:
             golf_club_id=golf_club_id,
             created_ts=created_ts,
             touched_ts=None,
-            **golf_club_body.dict()
+            **golf_club_body.dict(),
         )
         return PostGolfClubResponse(
             status=Status.success,
             data=golf_club,
-            metadata=FootwedgeApiMetadata(uri=uri)
+            metadata=FootwedgeApiMetadata(uri=uri),
         )
 
     def add_golf_course(
-            self,
-            golf_club_id: str,
-            golf_course_body: GolfCourseBody
+        self, golf_club_id: str, golf_course_body: GolfCourseBody
     ) -> PostGolfCourseResponse:
         partition_key = self._tag_key(_key=golf_club_id)
         golf_course_id = str(uuid.uuid4())
@@ -102,7 +96,7 @@ class GolfClubService:
             "golf_course_id": golf_course_id,
             "created_ts": created_ts.isoformat(),
             "touched_ts": None,
-            **golf_course_body.dict()
+            **golf_course_body.dict(),
         }
         response = self.repo.add(item=item)
         validate_response(response)
@@ -120,12 +114,12 @@ class GolfClubService:
         )
 
     def get_golf_courses(
-            self,
-            golf_club_id: str,
+        self,
+        golf_club_id: str,
     ) -> GetGolfCoursesResponse:
         partition_key = self._tag_key(_key=golf_club_id)
         response = self.repo.get_golf_courses(partition_key=partition_key)
-        items = response.get('Items')
+        items = response.get("Items")
         if items:
             golf_courses = [GolfCourse(**item) for item in items]
             return GetGolfCoursesResponse(
@@ -140,9 +134,9 @@ class GolfClubService:
         )
 
     def get_golf_course(
-            self,
-            golf_club_id: str,
-            golf_course_id: str,
+        self,
+        golf_club_id: str,
+        golf_course_id: str,
     ) -> GetGolfCourseResponse:
         partition_key = self._tag_key(_key=golf_club_id)
         sort_key = f"{GOLF_COURSE_TAG}{golf_course_id}"
@@ -151,7 +145,7 @@ class GolfClubService:
             sort_key=sort_key,
         )
         # TODO: validate response metadata
-        item = response.get('Item')
+        item = response.get("Item")
         if item:
             golf_course = GolfCourse(**item)
             return GetGolfCourseResponse(

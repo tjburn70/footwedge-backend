@@ -5,10 +5,10 @@ from .base_repository import BaseRepository
 
 
 class GolfClubRepository(BaseRepository):
-
     def get_golf_courses(self, partition_key: str):
         return self.table.query(
-            KeyConditionExpression=Key('pk').eq(partition_key) & Key('sk').begins_with(GOLF_COURSE_TAG)
+            KeyConditionExpression=Key("pk").eq(partition_key)
+            & Key("sk").begins_with(GOLF_COURSE_TAG)
         )
 
 
