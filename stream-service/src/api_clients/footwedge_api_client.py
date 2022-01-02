@@ -13,7 +13,6 @@ logger = get_logger(name=__name__)
 
 
 class FootwedgeApiClient:
-
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
         self._auth_headers = {}
@@ -29,36 +28,31 @@ class FootwedgeApiClient:
     async def auth_headers(self) -> Dict[str, str]:
         if not self._auth_headers:
             access_token = await self.get_access_token()
-            self._auth_headers['Authorization'] = f"Bearer {access_token}"
+            self._auth_headers["Authorization"] = f"Bearer {access_token}"
         return self._auth_headers
 
     async def get_access_token(self):
-        cognito_token_url = (
-            f"https://{settings.COGNITO_DOMAIN}.auth.{settings.COGNITO_REGION}.amazoncognito.com/oauth2/token"
-        )
+        cognito_token_url = f"https://{settings.COGNITO_DOMAIN}.auth.{settings.COGNITO_REGION}.amazoncognito.com/oauth2/token"
         payload = {
-            'grant_type': 'client_credentials',
-            'client_id': settings.STREAM_SERVICE_COGNITO_CLIENT_ID,
-            'client_secret': settings.STREAM_SERVICE_COGNITO_CLIENT_SECRET,
+            "grant_type": "client_credentials",
+            "client_id": settings.STREAM_SERVICE_COGNITO_CLIENT_ID,
+            "client_secret": settings.STREAM_SERVICE_COGNITO_CLIENT_SECRET,
         }
-        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-        async with self.session.post(url=cognito_token_url, data=payload, headers=headers) as resp:
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        async with self.session.post(
+            url=cognito_token_url, data=payload, headers=headers
+        ) as resp:
             resp.raise_for_status()
             data = await resp.json()
-            return data['access_token']
+            return data["access_token"]
 
     async def call_async(self, method: str, path: str, **kwargs) -> Dict:
         url = f"{settings.FOOTWEDGE_API_URL}/{path}"
         logger.info(f"async requesting: {method} {url}")
-        kwarg_headers = kwargs.pop('headers', {})
+        kwarg_headers = kwargs.pop("headers", {})
         auth_headers = await self.auth_headers
         headers = {**auth_headers, **kwarg_headers}
-        async with self.session.request(
-            method,
-            url,
-            headers=headers,
-            **kwargs
-        ) as resp:
+        async with self.session.request(method, url, headers=headers, **kwargs) as resp:
             resp.raise_for_status()
             data = await resp.json()
             logger.info(f"response body: {data}")
@@ -70,7 +64,7 @@ class FootwedgeApiClient:
             method="get",
             path=path,
         )
-        results = resp_body.get('data', [])
+        results = resp_body.get("data", [])
         return [GolfRound(**result) for result in results]
 
     async def get_tee_box(self, golf_course_id: str, tee_box_id: str) -> TeeBox:
@@ -79,7 +73,7 @@ class FootwedgeApiClient:
             method="get",
             path=path,
         )
-        data = resp_body.get('data')
+        data = resp_body.get("data")
         if not data:
             message = f"No TeeBox found with id: {tee_box_id}"
             logger.error(message)

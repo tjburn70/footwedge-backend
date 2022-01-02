@@ -11,7 +11,6 @@ logger = get_logger(name=__name__)
 
 
 class FootwedgeSearchClient:
-
     def __init__(self):
         self.session: Optional[aiohttp.ClientSession] = None
         self._auth_headers = {}
@@ -26,11 +25,7 @@ class FootwedgeSearchClient:
     async def call_async(self, method: str, path: str, **kwargs) -> Dict:
         url = f"{settings.FOOTWEDGE_SEARCH_URL}/{path}"
         logger.info(f"async requesting: {method} {url}")
-        async with self.session.request(
-            method,
-            url,
-            **kwargs
-        ) as resp:
+        async with self.session.request(method, url, **kwargs) as resp:
             resp.raise_for_status()
             data = await resp.json()
             logger.info(f"response body: {data}")
@@ -50,7 +45,7 @@ class FootwedgeSearchClient:
             method="post",
             path="golf-club",
             data=data,
-            headers={'content-type': 'application/json'}
+            headers={"content-type": "application/json"},
         )
 
     async def add_golf_course(self, golf_club_id: str, golf_course: GolfCourse):
@@ -59,5 +54,5 @@ class FootwedgeSearchClient:
             method="patch",
             path=path,
             data=golf_course.json(),
-            headers={'content-type': 'application/json'}
+            headers={"content-type": "application/json"},
         )

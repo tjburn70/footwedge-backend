@@ -1,0 +1,125 @@
+{
+    "env": {
+      "node": true,
+      "es6": true,
+      "jest": true
+    },
+    "extends": [
+      "standard",
+      "prettier",
+      "plugin:prettier/recommended",
+      "plugin:@typescript-eslint/recommended"
+    ],
+    "globals": {
+      "Atomics": "readonly",
+      "SharedArrayBuffer": "readonly"
+    },
+    "parserOptions": {
+      "ecmaVersion": 2018,
+      "sourceType": "module",
+      "project": "./tsconfig.json"
+    },
+    "settings": {
+      "import/resolver": {
+        "alias": {
+          "map": [
+            [
+              "@services",
+              "./service/lib"
+            ],
+            [
+              "@lambdas",
+              "./service/lambda"
+            ]
+          ],
+          "extensions": [
+            ".js",
+            ".ts"
+          ]
+        }
+      }
+    },
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "prettier",
+      "standard",
+      "@typescript-eslint"
+    ],
+    "rules": {
+      "no-useless-constructor": "off",
+      "@typescript-eslint/no-useless-constructor": "error",
+      "@typescript-eslint/indent": [
+        0,
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "@typescript-eslint/no-use-before-define": 0,
+      "@typescript-eslint/member-delimiter-style": 0,
+      "max-len": [
+        2,
+        80,
+        2,
+        {
+          "ignoreComments": true,
+          "ignoreStrings": true,
+          "ignoreTemplateLiterals": true
+        }
+      ],
+      "indent": [
+        2,
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ],
+      "linebreak-style": [
+        "error",
+        "unix"
+      ],
+      "quotes": [
+        "error",
+        "single",
+        {
+          "avoidEscape": true
+        }
+      ],
+      "semi": [
+        "error",
+        "never"
+      ],
+      "no-unused-vars": 2,
+      "no-mixed-operators": 2,
+      "no-useless-escape": 2,
+      "import/no-restricted-paths": [
+        "error",
+        {
+          "zones": [
+            {
+              "target": "./service",
+              "from": "./infrastructure"
+            },
+            {
+              "target": "./infrastructure",
+              "from": "./service"
+            }
+          ]
+        }
+      ],
+      "import/no-unresolved": [
+        2,
+        {
+          "caseSensitive": true,
+          "commonjs": true
+        }
+      ],
+      "no-template-curly-in-string": 0,
+      "prefer-template": 2,
+      "no-new": 0,
+      "@typescript-eslint/no-non-null-assertion": 0,
+      "no-unused-expressions": "off",
+      "@typescript-eslint/no-floating-promises": 2
+    }
+  }
+  

@@ -4,7 +4,6 @@ from footwedge_models import User
 
 
 class SyncUser(AbstractTask):
-
     def __init__(self, event_name: str, dynamodb_record: dict):
         super(SyncUser, self).__init__(event_name, dynamodb_record)
         self.partition_key = self.keys["pk"]["S"]

@@ -14,7 +14,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -135,3 +134,10 @@ docker/
 # IntelliJ
 .DS_Store
 .idea/
+
+# Node
+node_modules/
+
+# AWS CDK
+.build/
+cdk_stack/
