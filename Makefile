@@ -5,11 +5,20 @@ AWS_ACCOUNT_ID = 753710783959
 REGION = us-east-2
 SYNTH_OUT ?= cdk_stack
 
-build: build-cdk
+build: build-cdk build-footwedge-api build-post-confirmation-service build-stream-service
 
 build-cdk:
 	yarn run build
 	yarn run lint
+
+build-footwedge-api:
+	make -C footwedge-api/ build
+
+build-post-confirmation-service:
+	make -C post-confirmation-service/ build
+
+build-stream-service:
+	make -C stream-service/ build
 
 deploy:
 	yarn run cdk -- deploy $(ENV_NAME)-$(SERVICE_NAME) \
