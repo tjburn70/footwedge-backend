@@ -20,16 +20,28 @@ export function generateCognitoUserPool(
     accountRecovery: cognito.AccountRecovery.EMAIL_ONLY,
     standardAttributes: {
       givenName: {
-        required: true,
+        required: false,
         mutable: true,
       },
       familyName: {
-        required: true,
+        required: false,
         mutable: true,
       },
       email: {
         required: true,
         mutable: false,
+      },
+      gender: {
+        required: true,
+        mutable: true,
+      },
+      birthdate: {
+        required: true,
+        mutable: false,
+      },
+      phoneNumber: {
+        required: false,
+        mutable: true,
       },
     },
     customAttributes: {
