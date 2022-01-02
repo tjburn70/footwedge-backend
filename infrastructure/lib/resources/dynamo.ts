@@ -5,7 +5,6 @@ import * as dynamo from '@aws-cdk/aws-dynamodb'
 export function generateTable(
     scope: cdk.Construct,
     tableName: string,
-    streamServiceLambda: lambda.Function,
     footwedgeApiLambda: lambda.Function,
 ): dynamo.Table {
     const table = new dynamo.Table(scope, 'FootwedgeTable', {
@@ -24,8 +23,6 @@ export function generateTable(
         writeCapacity: 1,
         projectionType: dynamo.ProjectionType.ALL,
     })
-
-    table.grantStreamRead(streamServiceLambda)
     table.grantReadWriteData(footwedgeApiLambda)
 
     return table

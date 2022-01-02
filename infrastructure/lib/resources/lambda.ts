@@ -1,5 +1,7 @@
 import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
+import * as dynamo from '@aws-cdk/aws-dynamodb'
+import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources'
 import * as path from 'path'
 
 export interface FootwedgeApiProps {
@@ -92,6 +94,7 @@ export interface StreamServiceProps {
   cognitoRegion: string,
   streamServiceCognitoClientId: string,
   streamServiceCognitoClientSecret: string,
+  footwedgeTable: dynamo.Table,
 }
 
 export function generateStreamServiceLambda(
@@ -99,7 +102,7 @@ export function generateStreamServiceLambda(
   props: StreamServiceProps,
 ): lambda.Function {
   const id = 'stream-service'
-  return new lambda.Function(scope, id, {
+  const fn = new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
     code: lambda.Code.fromAsset(
       path.join(__dirname, `../../../${id}/target`)
@@ -118,4 +121,12 @@ export function generateStreamServiceLambda(
       FOOTWEDGE_SEARCH_URL: 'https://search.footwedge.io',
     }
   })
+  fn.addEventSource(new DynamoEventSource(footwedgeTable, {
+    startingPosition: lambda.StartingPosition.TRIM_HORIZON,
+    batchSize: 5,
+    bisectBatchOnError: true,
+    // onFailure: new SqsDlq(deadLetterQueue),
+    retryAttempts: 5,
+  }))
+  return fn
 }

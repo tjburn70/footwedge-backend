@@ -87,6 +87,12 @@ export class FootwedgeBackendStack extends Stack {
     )
     generateFootwedgeApi(this, footwedgeApiLambda)
 
+    const footwedgeTable = generateTable(
+      this,
+      footwedgeTableName,
+      footwedgeApiLambda,
+    )
+
     const streamServiceLambda = generateStreamServiceLambda(
       this,
       {
@@ -96,15 +102,11 @@ export class FootwedgeBackendStack extends Stack {
         cognitoDomain: footwedgeCognitoDomain.domainName,
         streamServiceCognitoClientId: streamServiceClient.userPoolClientId,
         streamServiceCognitoClientSecret: '',
+        footwedgeTable: footwedgeTable
       }
     )
-    
-    generateTable(
-      this,
-      footwedgeTableName,
-      footwedgeApiLambda,
-      streamServiceLambda,
-    )
+
+    footwedgeTable.grantStream(streamServiceLambda)
 
     const searchServiceLambda = generateSearchServiceLambda(
       this,
