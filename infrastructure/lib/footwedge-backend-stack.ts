@@ -88,7 +88,7 @@ export class FootwedgeBackendStack extends Stack {
       dynamoDbUrl: dynamoDbUrl,
       footwedgeDynamoTableName: footwedgeTableName,
     })
-    generateFootwedgeApi(this, footwedgeApiLambda)
+    generateFootwedgeApi(this, footwedgeApiLambda, props.env)
 
     const footwedgeTable = generateTable(
       this,
