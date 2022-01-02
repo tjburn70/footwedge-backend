@@ -9,16 +9,16 @@ export function generateTable(
 ): dynamo.Table {
   const table = new dynamo.Table(scope, 'FootwedgeTable', {
     tableName: tableName,
-    partitionKey: { name: 'PK', type: dynamo.AttributeType.STRING },
-    sortKey: { name: 'SK', type: dynamo.AttributeType.STRING },
+    partitionKey: { name: 'pk', type: dynamo.AttributeType.STRING },
+    sortKey: { name: 'sk', type: dynamo.AttributeType.STRING },
     readCapacity: 1,
     writeCapacity: 1,
     stream: dynamo.StreamViewType.NEW_IMAGE,
   })
   table.addGlobalSecondaryIndex({
     indexName: 'GSI1',
-    partitionKey: { name: 'GSI1PK', type: dynamo.AttributeType.STRING },
-    sortKey: { name: 'GSI1SK', type: dynamo.AttributeType.STRING },
+    partitionKey: { name: 'gsi1pk', type: dynamo.AttributeType.STRING },
+    sortKey: { name: 'gsi1sk', type: dynamo.AttributeType.STRING },
     readCapacity: 1,
     writeCapacity: 1,
     projectionType: dynamo.ProjectionType.ALL,
