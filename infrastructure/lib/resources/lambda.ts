@@ -66,9 +66,11 @@ export function generateSearchServiceLambda(
 export function generatePostConfirmationLambda(
   scope: cdk.Construct,
   envName: string,
-  serviceName: string
+  serviceName: string,
+  footwedgeApiDomainName: string
 ): lambda.Function {
   const id = 'post-confirmation-service'
+  const footwedgeApiUrl = `https://${footwedgeApiDomainName}/v1`
   return new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
     code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
@@ -77,7 +79,7 @@ export function generatePostConfirmationLambda(
     memorySize: 512,
     timeout: cdk.Duration.minutes(2),
     environment: {
-      FOOTWEDGE_API_URL: 'https://api.footwedge.io/v1',
+      FOOTWEDGE_API_URL: footwedgeApiUrl,
       ENV_NAME: envName,
     },
   })
@@ -91,6 +93,7 @@ export interface StreamServiceProps {
   streamServiceCognitoClientId: string
   streamServiceCognitoClientSecret: string
   footwedgeTable: dynamo.Table
+  footwedgeApiDomainName: string
 }
 
 export function generateStreamServiceLambda(
@@ -98,6 +101,7 @@ export function generateStreamServiceLambda(
   props: StreamServiceProps
 ): lambda.Function {
   const id = 'stream-service'
+  const footwedgeApiUrl = `https://${props.footwedgeApiDomainName}/v1`
   const fn = new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
     code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
@@ -112,7 +116,7 @@ export function generateStreamServiceLambda(
       STREAM_SERVICE_COGNITO_CLIENT_ID: props.streamServiceCognitoClientId,
       STREAM_SERVICE_COGNITO_CLIENT_SECRET:
         props.streamServiceCognitoClientSecret,
-      FOOTWEDGE_API_URL: 'https://api.footwedge.io/v1',
+      FOOTWEDGE_API_URL: footwedgeApiUrl,
       FOOTWEDGE_SEARCH_URL: 'https://search.footwedge.io',
     },
   })

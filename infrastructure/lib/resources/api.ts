@@ -9,7 +9,7 @@ import { getFootwedgeHostedZone } from './route53'
 export function generateFootwedgeApi(
   scope: cdk.Construct,
   footwedgeApiLambda: lambda.Function,
-  envName: string
+  footwedgeApiDomainName: string
 ): apigateway.LambdaRestApi {
   const api = new apigateway.LambdaRestApi(scope, 'FootwedgeApi', {
     handler: footwedgeApiLambda,
@@ -19,17 +19,16 @@ export function generateFootwedgeApi(
     'FootwedgeApiCert',
     'arn:aws:acm:us-east-1:753710783959:certificate/eae95265-612c-4a51-b197-6d0c8923e728'
   )
-  const dnsName = `${envName}-api.footwedge.io`
   api.addDomainName('FootwedgeApiDomain', {
     certificate: domainCert,
-    domainName: dnsName,
+    domainName: footwedgeApiDomainName,
     endpointType: apigateway.EndpointType.EDGE,
   })
   const footwedgeHostedZone = getFootwedgeHostedZone(scope)
   new route53.ARecord(scope, 'FootwedgeApiARecord', {
     zone: footwedgeHostedZone,
     target: route53.RecordTarget.fromAlias(new targets.ApiGateway(api)),
-    recordName: dnsName,
+    recordName: footwedgeApiDomainName,
   })
 
   return api

@@ -35,10 +35,12 @@ export class FootwedgeBackendStack extends Stack {
         account: props.account,
       },
     })
+    const footwedgeApiDomainName = `${props.env}-api.footwedge.io`
     const postConfirmationLambda = generatePostConfirmationLambda(
       this,
       props.env,
-      props.service
+      props.service,
+      footwedgeApiDomainName
     )
     const footwedgeUserPool = generateCognitoUserPool(
       this,
@@ -88,7 +90,7 @@ export class FootwedgeBackendStack extends Stack {
       dynamoDbUrl: dynamoDbUrl,
       footwedgeDynamoTableName: footwedgeTableName,
     })
-    generateFootwedgeApi(this, footwedgeApiLambda, props.env)
+    generateFootwedgeApi(this, footwedgeApiLambda, footwedgeApiDomainName)
 
     const footwedgeTable = generateTable(
       this,
@@ -104,6 +106,7 @@ export class FootwedgeBackendStack extends Stack {
       streamServiceCognitoClientId: streamServiceClient.userPoolClientId,
       streamServiceCognitoClientSecret: '',
       footwedgeTable: footwedgeTable,
+      footwedgeApiDomainName: footwedgeApiDomainName,
     })
 
     footwedgeTable.grantStreamRead(streamServiceLambda)
