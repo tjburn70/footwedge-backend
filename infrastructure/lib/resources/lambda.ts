@@ -94,6 +94,7 @@ export interface StreamServiceProps {
   streamServiceCognitoClientSecret: string
   footwedgeTable: dynamo.Table
   footwedgeApiDomainName: string
+  searchServiceDomainName: string
 }
 
 export function generateStreamServiceLambda(
@@ -102,6 +103,7 @@ export function generateStreamServiceLambda(
 ): lambda.Function {
   const id = 'stream-service'
   const footwedgeApiUrl = `https://${props.footwedgeApiDomainName}/v1`
+  const searchServiceApiUrl = `https://${props.searchServiceDomainName}`
   const fn = new lambda.Function(scope, id, {
     runtime: lambda.Runtime.PYTHON_3_7,
     code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
@@ -117,7 +119,7 @@ export function generateStreamServiceLambda(
       STREAM_SERVICE_COGNITO_CLIENT_SECRET:
         props.streamServiceCognitoClientSecret,
       FOOTWEDGE_API_URL: footwedgeApiUrl,
-      FOOTWEDGE_SEARCH_URL: 'https://search.footwedge.io',
+      FOOTWEDGE_SEARCH_URL: searchServiceApiUrl,
     },
   })
   fn.addEventSource(

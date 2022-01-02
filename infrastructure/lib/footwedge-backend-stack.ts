@@ -16,6 +16,7 @@ import {
   generatePostConfirmationLambda,
   generateStreamServiceLambda,
 } from './resources/lambda'
+import { getFootwedgeHostedZone } from './resources/route53'
 
 export interface FootwedgeBackendStackProps {
   readonly env: string
@@ -24,6 +25,7 @@ export interface FootwedgeBackendStackProps {
   readonly account: string
   readonly algoliaAppId: string
   readonly algoliaApiKey: string
+  readonly streamServiceCognitoClientSecret: string
 }
 
 export class FootwedgeBackendStack extends Stack {
@@ -90,7 +92,28 @@ export class FootwedgeBackendStack extends Stack {
       dynamoDbUrl: dynamoDbUrl,
       footwedgeDynamoTableName: footwedgeTableName,
     })
-    generateFootwedgeApi(this, footwedgeApiLambda, footwedgeApiDomainName)
+    const footwedgeHostedZone = getFootwedgeHostedZone(this)
+    generateFootwedgeApi(
+      this,
+      footwedgeApiLambda,
+      footwedgeApiDomainName,
+      footwedgeHostedZone
+    )
+
+    const searchServiceLambda = generateSearchServiceLambda(
+      this,
+      props.env,
+      props.service,
+      props.algoliaAppId,
+      props.algoliaApiKey
+    )
+    const searchServiceDomainName = `${props.env}-search.footwedge.io`
+    generateSearchServiceApi(
+      this,
+      searchServiceLambda,
+      searchServiceDomainName,
+      footwedgeHostedZone
+    )
 
     const footwedgeTable = generateTable(
       this,
@@ -104,20 +127,12 @@ export class FootwedgeBackendStack extends Stack {
       cognitoRegion: props.region,
       cognitoDomain: footwedgeCognitoDomain.domainName,
       streamServiceCognitoClientId: streamServiceClient.userPoolClientId,
-      streamServiceCognitoClientSecret: '',
+      streamServiceCognitoClientSecret: props.streamServiceCognitoClientSecret,
       footwedgeTable: footwedgeTable,
       footwedgeApiDomainName: footwedgeApiDomainName,
+      searchServiceDomainName: searchServiceDomainName,
     })
 
     footwedgeTable.grantStreamRead(streamServiceLambda)
-
-    const searchServiceLambda = generateSearchServiceLambda(
-      this,
-      props.env,
-      props.service,
-      props.algoliaAppId,
-      props.algoliaApiKey
-    )
-    generateSearchServiceApi(this, searchServiceLambda)
   }
 }
