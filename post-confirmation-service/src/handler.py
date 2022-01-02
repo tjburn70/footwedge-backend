@@ -28,7 +28,7 @@ def post_user(username: str, user_attributes: dict):
         logger.error(msg=f"Failed to create user, due to: {resp.text}")
         return
 
-    user_email = user_body['email']
+    user_email = user_body["email"]
     logger.info(f"Successfully created user with email: {user_email}")
 
 

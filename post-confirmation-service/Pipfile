@@ -11,6 +11,8 @@ requests = "==2.25.1"
 urllib3 = "==1.26.4"
 
 [dev-packages]
+black = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"
