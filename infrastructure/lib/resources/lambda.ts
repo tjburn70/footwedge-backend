@@ -121,7 +121,7 @@ export function generateStreamServiceLambda(
       FOOTWEDGE_SEARCH_URL: 'https://search.footwedge.io',
     }
   })
-  fn.addEventSource(new DynamoEventSource(footwedgeTable, {
+  fn.addEventSource(new DynamoEventSource(props.footwedgeTable, {
     startingPosition: lambda.StartingPosition.TRIM_HORIZON,
     batchSize: 5,
     bisectBatchOnError: true,
