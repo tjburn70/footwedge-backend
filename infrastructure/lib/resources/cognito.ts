@@ -33,8 +33,8 @@ export function generateCognitoUserPool(
       },
     },
     customAttributes: {
-      'firstName': new cognito.StringAttribute({ mutable: true }),
-      'lastName': new cognito.StringAttribute({ mutable: true }),
+      firstName: new cognito.StringAttribute({ mutable: true }),
+      lastName: new cognito.StringAttribute({ mutable: true }),
     },
     passwordPolicy: {
       minLength: 8,
