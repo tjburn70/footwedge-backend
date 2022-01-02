@@ -15,8 +15,13 @@ import {
   generateSearchServiceLambda,
   generatePostConfirmationLambda,
   generateStreamServiceLambda,
+  generateScrapeGolfClubsLambda,
+  generateUploadGolfClubsLambda,
 } from './resources/lambda'
 import { getFootwedgeHostedZone } from './resources/route53'
+import { generateGolfClubQueue } from './resources/sqs'
+import { generateNewGolfClubTopic } from './resources/sns'
+import { generateGolfClubSourceBucket } from './resources/s3'
 
 export interface FootwedgeBackendStackProps {
   readonly env: string
@@ -26,6 +31,7 @@ export interface FootwedgeBackendStackProps {
   readonly algoliaAppId: string
   readonly algoliaApiKey: string
   readonly streamServiceCognitoClientSecret: string
+  readonly scrapeServiceCognitoClientSecret: string
 }
 
 export class FootwedgeBackendStack extends Stack {
@@ -75,7 +81,7 @@ export class FootwedgeBackendStack extends Stack {
       golfRoundsReadScope,
       handicapWriteScope
     )
-    addScrapeServiceClient(
+    const scrapeServiceClient = addScrapeServiceClient(
       footwedgeUserPool,
       footwedgeCognitoResourceServer,
       golfClubWriteScope
@@ -134,5 +140,27 @@ export class FootwedgeBackendStack extends Stack {
     })
 
     footwedgeTable.grantStreamRead(streamServiceLambda)
+
+    const golfClubQueue = generateGolfClubQueue(this)
+    const golfClubTopic = generateNewGolfClubTopic(this, golfClubQueue)
+    const golfClubSourceBucket = generateGolfClubSourceBucket(
+      this,
+      `${props.env}-footwedge-golf-club-source`,
+      golfClubTopic
+    )
+    generateScrapeGolfClubsLambda(
+      this,
+      golfClubSourceBucket,
+      props.env,
+      props.service
+    )
+    generateUploadGolfClubsLambda(this, {
+      envName: props.env,
+      serviceName: props.service,
+      golfClubQueue: golfClubQueue,
+      golfClubSourceBucket: golfClubSourceBucket,
+      scrapeServiceCognitoClientId: scrapeServiceClient.userPoolClientId,
+      scrapeServiceCognitoClientSecret: props.scrapeServiceCognitoClientSecret,
+    })
   }
 }

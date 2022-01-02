@@ -14,6 +14,9 @@ const ALGOLIA_API_KEY = app.node.tryGetContext('ALGOLIA_API_KEY')
 const STREAM_SERVICE_COGNITO_CLIENT_SECRET = app.node.tryGetContext(
   'STREAM_SERVICE_COGNITO_CLIENT_SECRET'
 )
+const SCRAPE_SERVICE_COGNITO_CLIENT_SECRET = app.node.tryGetContext(
+  'SCRAPE_SERVICE_COGNITO_CLIENT_SECRET'
+)
 
 new FootwedgeBackendStack(app, `${ENV}-${SERVICE}`, {
   env: ENV,
@@ -23,4 +26,5 @@ new FootwedgeBackendStack(app, `${ENV}-${SERVICE}`, {
   algoliaAppId: ALGOLIA_FOOTWEDGE_APP_ID,
   algoliaApiKey: ALGOLIA_API_KEY,
   streamServiceCognitoClientSecret: STREAM_SERVICE_COGNITO_CLIENT_SECRET,
+  scrapeServiceCognitoClientSecret: SCRAPE_SERVICE_COGNITO_CLIENT_SECRET,
 })

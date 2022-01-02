@@ -1,7 +1,12 @@
 import * as cdk from '@aws-cdk/core'
 import * as lambda from '@aws-cdk/aws-lambda'
 import * as dynamo from '@aws-cdk/aws-dynamodb'
-import { DynamoEventSource } from '@aws-cdk/aws-lambda-event-sources'
+import {
+  DynamoEventSource,
+  SqsEventSource,
+} from '@aws-cdk/aws-lambda-event-sources'
+import { Bucket } from '@aws-cdk/aws-s3'
+import { Queue } from '@aws-cdk/aws-sqs'
 import * as path from 'path'
 
 export interface FootwedgeApiProps {
@@ -132,4 +137,72 @@ export function generateStreamServiceLambda(
     })
   )
   return fn
+}
+
+export function generateScrapeGolfClubsLambda(
+  scope: cdk.Construct,
+  footwedgeGolfClubSourceBucket: Bucket,
+  envName: string,
+  serviceName: string
+): lambda.Function {
+  const id = 'scrape-golf-clubs'
+  const scrapeGolfClubsLambda = new lambda.Function(scope, id, {
+    runtime: lambda.Runtime.PYTHON_3_6,
+    code: lambda.Code.fromAsset(path.join(__dirname, `../../../${id}/target`)),
+    handler: 'app.lambda_handler',
+    functionName: `${envName}-${serviceName}-${id}`,
+    memorySize: 512,
+    timeout: cdk.Duration.minutes(10),
+    environment: {
+      FOOTWEDGE_GOLF_CLUB_SOURCE_BUCKET_NAME:
+        footwedgeGolfClubSourceBucket.bucketName,
+      ENV_NAME: envName,
+    },
+  })
+
+  footwedgeGolfClubSourceBucket.grantPut(scrapeGolfClubsLambda)
+  footwedgeGolfClubSourceBucket.grantWrite(scrapeGolfClubsLambda)
+
+  return scrapeGolfClubsLambda
+}
+
+export interface UploadGolfClubProps {
+  envName: string
+  serviceName: string
+  golfClubQueue: Queue
+  golfClubSourceBucket: Bucket
+  scrapeServiceCognitoClientId: string
+  scrapeServiceCognitoClientSecret: string
+}
+
+export function generateUploadGolfClubsLambda(
+  scope: cdk.Construct,
+  props: UploadGolfClubProps
+): lambda.Function {
+  const id = 'uploadGolfClubs'
+  const uploadGolfClubLambda = new lambda.Function(scope, id, {
+    runtime: lambda.Runtime.NODEJS_14_X,
+    code: lambda.Code.fromAsset(path.join(__dirname, `../../../dist/${id}`)),
+    handler: 'index.lambdaHandler',
+    functionName: `${props.envName}-${props.serviceName}-${id}`,
+    memorySize: 512,
+    timeout: cdk.Duration.minutes(5),
+    environment: {
+      ENV_NAME: props.envName,
+      SCRAPE_SERVICE_COGNITO_CLIENT_ID: props.scrapeServiceCognitoClientId,
+      SCRAPE_SERVICE_COGNITO_CLIENT_SECRET:
+        props.scrapeServiceCognitoClientSecret,
+    },
+  })
+
+  uploadGolfClubLambda.addEventSource(
+    new SqsEventSource(props.golfClubQueue, {
+      batchSize: 25,
+      maxBatchingWindow: cdk.Duration.minutes(2),
+    })
+  )
+
+  props.golfClubSourceBucket.grantRead(uploadGolfClubLambda)
+
+  return uploadGolfClubLambda
 }
