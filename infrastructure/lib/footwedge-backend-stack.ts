@@ -71,7 +71,7 @@ export class FootwedgeBackendStack extends Stack {
       golfRoundsReadScope,
       handicapWriteScope
     )
-    const scrapeServiceClient = addScrapeServiceClient(
+    addScrapeServiceClient(
       footwedgeUserPool,
       footwedgeCognitoResourceServer,
       golfClubWriteScope
@@ -106,7 +106,7 @@ export class FootwedgeBackendStack extends Stack {
       footwedgeTable: footwedgeTable,
     })
 
-    footwedgeTable.grantStream(streamServiceLambda)
+    footwedgeTable.grantStreamRead(streamServiceLambda)
 
     const searchServiceLambda = generateSearchServiceLambda(
       this,
