@@ -15,7 +15,7 @@ class TeeBoxBody(BaseModel):
     tee_box_color: str
     gender: str
     par: int
-    distance: int
+    distance: Optional[int]
     unit: str
     course_rating: Decimal
     slope: int
