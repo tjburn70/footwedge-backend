@@ -8,7 +8,6 @@ DELETE_EVENT = "DELETE"
 
 
 class SyncGolfClub(AbstractTask):
-
     def __init__(self, event_name: str, dynamodb_record: dict):
         super(SyncGolfClub, self).__init__(event_name, dynamodb_record)
         self.partition_key = self.keys["pk"]["S"]
@@ -18,7 +17,11 @@ class SyncGolfClub(AbstractTask):
         self.sk_tag = self.sort_key.split(self.key_delimiter)[0]
 
     def _parse_attribute(self, key: str, data_type: str):
-        return self.image[key][data_type] if self.image.get(key) and self.image[key].get(data_type) else None
+        return (
+            self.image[key][data_type]
+            if self.image.get(key) and self.image[key].get(data_type)
+            else None
+        )
 
     def build_golf_club(self, golf_club_id: str) -> GolfClub:
         name = self.image["name"]["S"]

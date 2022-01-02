@@ -17,6 +17,8 @@ typing-extensions = "==3.10.0.0"
 yarl = "==1.6.3"
 
 [dev-packages]
+black = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.7"

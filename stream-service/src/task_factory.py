@@ -33,9 +33,9 @@ def parse_tag(record_keys: dict):
 
 
 def task_factory(record: dict) -> Optional[abstract_task.AbstractTask]:
-    event_name = record['eventName']
-    dynamodb_record = record['dynamodb']
-    record_keys = dynamodb_record['Keys']
+    event_name = record["eventName"]
+    dynamodb_record = record["dynamodb"]
+    record_keys = dynamodb_record["Keys"]
     tag = parse_tag(record_keys=record_keys)
     task_class = KEY_TAGS_TO_TASK_CLASS.get(tag)
     if task_class:

@@ -4,7 +4,6 @@ from tasks.abstract_task import AbstractTask
 
 
 class TaskEngine:
-
     def __init__(self, *tasks: AbstractTask):
         self._tasks = tasks
 
