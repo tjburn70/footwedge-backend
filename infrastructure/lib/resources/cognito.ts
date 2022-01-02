@@ -33,8 +33,8 @@ export function generateCognitoUserPool(
       },
     },
     customAttributes: {
-      'custom:firstName': new cognito.StringAttribute({ mutable: true }),
-      'custom:lastName': new cognito.StringAttribute({ mutable: true }),
+      'firstName': new cognito.StringAttribute({ mutable: true }),
+      'lastName': new cognito.StringAttribute({ mutable: true }),
     },
     passwordPolicy: {
       minLength: 8,
@@ -94,7 +94,7 @@ export function addStreamServiceClient(
   golfRoundsReadScope: cognito.ResourceServerScope,
   handicapWriteScope: cognito.ResourceServerScope
 ): cognito.UserPoolClient {
-  return userPool.addClient('WebClient', {
+  return userPool.addClient('StreamServiceClient', {
     oAuth: {
       flows: {
         clientCredentials: true,
@@ -114,7 +114,7 @@ export function addScrapeServiceClient(
   resourceServer: cognito.UserPoolResourceServer,
   golfClubWriteScope: cognito.ResourceServerScope
 ): cognito.UserPoolClient {
-  return userPool.addClient('WebClient', {
+  return userPool.addClient('ScrapeServiceClient', {
     oAuth: {
       flows: {
         clientCredentials: true,
