@@ -174,6 +174,7 @@ export interface UploadGolfClubProps {
   scrapeServiceCognitoClientId: string
   scrapeServiceCognitoClientSecret: string
   footwedgeApiDomainName: string
+  cognitoDomain: string
 }
 
 export function generateUploadGolfClubsLambda(
@@ -195,6 +196,7 @@ export function generateUploadGolfClubsLambda(
       SCRAPE_SERVICE_COGNITO_CLIENT_SECRET:
         props.scrapeServiceCognitoClientSecret,
       FOOTWEDGE_API_URL: footwedgeApiUrl,
+      COGNITO_DOMAIN: props.cognitoDomain,
     },
   })
 

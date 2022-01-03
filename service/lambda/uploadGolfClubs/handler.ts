@@ -23,8 +23,9 @@ export const handler: SQSHandler = async (event: SQSEvent) => {
 
   console.log(`Golf clubs to upload: ${golfClubs}`)
   const envName = process.env.ENV_NAME || 'dev'
-  const accessToken = await getAccessToken(envName)
-  const footwedgeBaseUrl = process.env.FOOTWEDGE_API_URL || `https://${envName}-api.footwedge.io/v1`
+  const accessToken = await getAccessToken()
+  const footwedgeBaseUrl =
+    process.env.FOOTWEDGE_API_URL || `https://${envName}-api.footwedge.io/v1`
   const golfCoursesByGolfClubId = await addGolfClubs(
     accessToken,
     footwedgeBaseUrl,

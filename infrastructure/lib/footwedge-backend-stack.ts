@@ -161,6 +161,8 @@ export class FootwedgeBackendStack extends Stack {
       golfClubSourceBucket: golfClubSourceBucket,
       scrapeServiceCognitoClientId: scrapeServiceClient.userPoolClientId,
       scrapeServiceCognitoClientSecret: props.scrapeServiceCognitoClientSecret,
+      footwedgeApiDomainName: footwedgeApiDomainName,
+      cognitoDomain: footwedgeCognitoDomain.domainName,
     })
   }
 }

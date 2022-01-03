@@ -3,8 +3,8 @@ import qs from 'qs'
 import * as aws from 'aws-sdk'
 import { CognitoTokenRespBody, GolfClub, GolfCourse, TeeBox } from './types'
 
-export async function getAccessToken(envName: string): Promise<string> {
-  const cognitoDomain = `footwedge-${envName}`
+export async function getAccessToken(): Promise<string> {
+  const cognitoDomain = process.env.COGNITO_DOMAIN
   const cognitoRegion = process.env.AWS_REGION
   const cognitoTokenUrl = `https://${cognitoDomain}.auth.${cognitoRegion}.amazoncognito.com/oauth2/token`
   const clientId = process.env.SCRAPE_SERVICE_COGNITO_CLIENT_ID
