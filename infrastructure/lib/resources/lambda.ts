@@ -173,6 +173,7 @@ export interface UploadGolfClubProps {
   golfClubSourceBucket: Bucket
   scrapeServiceCognitoClientId: string
   scrapeServiceCognitoClientSecret: string
+  footwedgeApiDomainName: string
 }
 
 export function generateUploadGolfClubsLambda(
@@ -180,6 +181,7 @@ export function generateUploadGolfClubsLambda(
   props: UploadGolfClubProps
 ): lambda.Function {
   const id = 'uploadGolfClubs'
+  const footwedgeApiUrl = `https://${props.footwedgeApiDomainName}/v1`
   const uploadGolfClubLambda = new lambda.Function(scope, id, {
     runtime: lambda.Runtime.NODEJS_14_X,
     code: lambda.Code.fromAsset(path.join(__dirname, `../../../dist/${id}`)),
@@ -192,6 +194,7 @@ export function generateUploadGolfClubsLambda(
       SCRAPE_SERVICE_COGNITO_CLIENT_ID: props.scrapeServiceCognitoClientId,
       SCRAPE_SERVICE_COGNITO_CLIENT_SECRET:
         props.scrapeServiceCognitoClientSecret,
+      FOOTWEDGE_API_URL: footwedgeApiUrl,
     },
   })
 
