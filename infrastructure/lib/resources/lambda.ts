@@ -202,7 +202,7 @@ export function generateUploadGolfClubsLambda(
 
   uploadGolfClubLambda.addEventSource(
     new SqsEventSource(props.golfClubQueue, {
-      batchSize: 25,
+      batchSize: 10,
       maxBatchingWindow: cdk.Duration.minutes(2),
     })
   )
