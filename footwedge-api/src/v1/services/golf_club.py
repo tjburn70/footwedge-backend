@@ -98,7 +98,7 @@ class GolfClubService:
         self, golf_club_id: str, golf_course_body: GolfCourseBody
     ) -> PostGolfCourseResponse:
         partition_key = self._tag_key(_key=golf_club_id)
-        golf_course_id = str(uuid.uuid4())
+        golf_course_id = golf_course_body.golf_course_id or str(uuid.uuid4())
         sort_key = f"{GOLF_COURSE_TAG}{golf_course_id}"
         created_ts = datetime.now()
         item = {
@@ -106,19 +106,15 @@ class GolfClubService:
             "sk": sort_key,
             "golf_club_id": golf_club_id,
             "golf_course_id": golf_course_id,
+            "name": golf_course_body.name,
+            "num_holes": golf_course_body.num_holes,
             "created_ts": created_ts.isoformat(),
             "touched_ts": None,
-            **golf_course_body.dict(),
         }
         response = self.repo.add(item=item)
         validate_response(response)
         uri = f"/{API_VERSION}/golf-clubs/{golf_club_id}/golf-courses/{golf_course_id}"
-        golf_course = GolfCourse(
-            golf_course_id=golf_course_id,
-            created_ts=created_ts,
-            touched_ts=None,
-            **golf_course_body.dict(),
-        )
+        golf_course = GolfCourse(**item)
         return PostGolfCourseResponse(
             status=Status.success,
             data=golf_course,
