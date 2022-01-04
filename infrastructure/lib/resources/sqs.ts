@@ -7,7 +7,7 @@ export function generateGolfClubQueue(scope: cdk.Construct) {
     deadLetterQueue: {
       queue: new sqs.Queue(scope, 'GolfClubQueueDLQ'),
       maxReceiveCount: 2,
-    }
+    },
   })
 }
 

@@ -19,7 +19,10 @@ import {
   generateUploadGolfClubsLambda,
 } from './resources/lambda'
 import { getFootwedgeHostedZone } from './resources/route53'
-import { generateGolfClubQueue, generateDynamoStreamsDeadLetterQueue } from './resources/sqs'
+import {
+  generateGolfClubQueue,
+  generateDynamoStreamsDeadLetterQueue,
+} from './resources/sqs'
 import { generateNewGolfClubTopic } from './resources/sns'
 import { generateGolfClubSourceBucket } from './resources/s3'
 
@@ -137,7 +140,7 @@ export class FootwedgeBackendStack extends Stack {
       footwedgeTable: footwedgeTable,
       footwedgeApiDomainName: footwedgeApiDomainName,
       searchServiceDomainName: searchServiceDomainName,
-      deadLetterQueue: generateDynamoStreamsDeadLetterQueue(this)
+      deadLetterQueue: generateDynamoStreamsDeadLetterQueue(this),
     })
 
     footwedgeTable.grantStreamRead(streamServiceLambda)
