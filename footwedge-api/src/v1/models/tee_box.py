@@ -12,6 +12,7 @@ from .golf_hole import (
 
 
 class TeeBoxBody(BaseModel):
+    tee_box_id: Optional[str] = None
     tee_box_color: str
     gender: str
     par: int
@@ -23,7 +24,6 @@ class TeeBoxBody(BaseModel):
 
 
 class TeeBox(TeeBoxBody):
-    tee_box_id: str
     holes: List[GolfHole] = []
     tee_box_info: str
     front_nine_holes: List[GolfHole] = []

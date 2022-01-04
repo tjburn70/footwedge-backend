@@ -36,7 +36,7 @@ class GolfCourseService:
         self, golf_course_id: str, tee_box_body: TeeBoxBody
     ) -> PostTeeBoxResponse:
         partition_key = self._tag_key(_key=golf_course_id)
-        tee_box_id = str(uuid.uuid4())
+        tee_box_id = tee_box_body.tee_box_id or str(uuid.uuid4())
         sort_key = f"{TEE_BOX_TAG}{tee_box_id}"
         created_ts = datetime.now()
         holes = [
