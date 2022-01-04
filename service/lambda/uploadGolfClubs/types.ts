@@ -5,6 +5,7 @@ export type CognitoTokenRespBody = {
 }
 
 export type TeeBox = {
+  tee_box_id: string
   tee_box_color: string
   gender: string
   par: number
@@ -15,12 +16,14 @@ export type TeeBox = {
 }
 
 export type GolfCourse = {
+  golf_course_id: string
   golf_course_name: string
   num_holes: number
   tee_boxes: TeeBox[]
 }
 
 export type GolfClub = {
+  golf_club_id: string
   golf_club_name: string
   city: string
   state_code: string

@@ -76,6 +76,7 @@ async function addGolfClub(
   }
   const url = `${baseFootwedgeUrl}/golf-clubs/`
   const data = {
+    golf_club_id: golfClub.golf_club_id,
     name: golfClub.golf_club_name,
     city: golfClub.city,
     state_code: golfClub.state_code,
@@ -129,6 +130,7 @@ async function addGolfCourse(
   }
   const url = `${baseFootwedgeUrl}/golf-clubs/${golfClubId}/golf-courses`
   const data = {
+    golf_course_id: golfCourse.golf_course_id,
     name: golfCourse.golf_course_name,
     num_holes: golfCourse.num_holes,
   }
@@ -171,6 +173,7 @@ async function addTeeBox(
   }
   const url = `${baseFootwedgeUrl}/golf-courses/${golfCourseId}/tee-boxes`
   const data = {
+    tee_box_id: teeBox.tee_box_id,
     tee_box_color: teeBox.tee_box_color,
     gender: teeBox.gender,
     par: teeBox.par,
