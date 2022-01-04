@@ -25,7 +25,7 @@ class TeeBoxBody(BaseModel):
 
 class TeeBox(TeeBoxBody):
     holes: List[GolfHole] = []
-    tee_box_info: str
+    tee_box_info: Optional[str] = None
     front_nine_holes: List[GolfHole] = []
     back_nine_holes: List[GolfHole] = []
     front_nine_yardage: Optional[int]

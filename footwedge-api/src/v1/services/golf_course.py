@@ -66,7 +66,7 @@ class GolfCourseService:
         response = self.repo.add(item=item)
         validate_response(response)
         uri = f"/{API_VERSION}/golf-courses/{golf_course_id}/tee-boxes/{tee_box_id}"
-        tee_box = self._map_tee_box(raw_tee_box=item)
+        tee_box = TeeBox(**item)
         return PostTeeBoxResponse(
             status="success", data=tee_box, metadata=FootwedgeApiMetadata(uri=uri)
         )
