@@ -55,7 +55,16 @@ class GolfClubService:
         )
 
     def add_golf_club(self, golf_club_body: GolfClubBody) -> PostGolfClubResponse:
-        golf_club_id = str(uuid.uuid4())
+        golf_club_id = golf_club_body.golf_club_id or str(uuid.uuid4())
+        golf_club_name = golf_club_body.name
+        address = golf_club_body.address
+        city = golf_club_body.city
+        state_code = golf_club_body.state_code
+        county = golf_club_body.county
+        zip_code = golf_club_body.zip_code
+        phone_number = golf_club_body.phone_number
+        email = golf_club_body.email
+        website = golf_club_body.website
         partition_key = self._tag_key(_key=golf_club_id)
         sort_key = partition_key
         created_ts = datetime.now()
@@ -63,19 +72,22 @@ class GolfClubService:
             "pk": partition_key,
             "sk": sort_key,
             "golf_club_id": golf_club_id,
+            "name": golf_club_name,
+            "address": address,
+            "city": city,
+            "state_code": state_code,
+            "county": county,
+            "zip_code": zip_code,
+            "phone_number": phone_number,
+            "email": email,
+            "website": website,
             "created_ts": created_ts.isoformat(),
             "touched_ts": None,
-            **golf_club_body.dict(),
         }
         response = self.repo.add(item=item)
         validate_response(response)
         uri = f"/{API_VERSION}/golf-clubs/{golf_club_id}"
-        golf_club = GolfClub(
-            golf_club_id=golf_club_id,
-            created_ts=created_ts,
-            touched_ts=None,
-            **golf_club_body.dict(),
-        )
+        golf_club = GolfClub(**item)
         return PostGolfClubResponse(
             status=Status.success,
             data=golf_club,
