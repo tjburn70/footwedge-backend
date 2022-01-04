@@ -6,6 +6,7 @@ from pydantic import BaseModel, AnyHttpUrl
 
 class GolfClubBody(BaseModel):
     name: str
+    golf_club_id: Optional[str] = None
     address: Optional[str] = None
     city: Optional[str] = None
     state_code: Optional[str] = None
@@ -17,6 +18,5 @@ class GolfClubBody(BaseModel):
 
 
 class GolfClub(GolfClubBody):
-    golf_club_id: str
     created_ts: datetime
     touched_ts: datetime = None

@@ -4,6 +4,7 @@ import * as dynamo from '@aws-cdk/aws-dynamodb'
 import {
   DynamoEventSource,
   SqsEventSource,
+  SqsDlq,
 } from '@aws-cdk/aws-lambda-event-sources'
 import { Bucket } from '@aws-cdk/aws-s3'
 import { Queue } from '@aws-cdk/aws-sqs'
@@ -100,6 +101,7 @@ export interface StreamServiceProps {
   footwedgeTable: dynamo.Table
   footwedgeApiDomainName: string
   searchServiceDomainName: string
+  deadLetterQueue: Queue
 }
 
 export function generateStreamServiceLambda(
@@ -132,7 +134,7 @@ export function generateStreamServiceLambda(
       startingPosition: lambda.StartingPosition.TRIM_HORIZON,
       batchSize: 5,
       bisectBatchOnError: true,
-      // onFailure: new SqsDlq(deadLetterQueue),
+      onFailure: new SqsDlq(props.deadLetterQueue),
       retryAttempts: 5,
     })
   )
@@ -202,7 +204,7 @@ export function generateUploadGolfClubsLambda(
 
   uploadGolfClubLambda.addEventSource(
     new SqsEventSource(props.golfClubQueue, {
-      batchSize: 25,
+      batchSize: 10,
       maxBatchingWindow: cdk.Duration.minutes(2),
     })
   )

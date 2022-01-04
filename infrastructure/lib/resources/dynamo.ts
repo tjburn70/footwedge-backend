@@ -11,16 +11,13 @@ export function generateTable(
     tableName: tableName,
     partitionKey: { name: 'pk', type: dynamo.AttributeType.STRING },
     sortKey: { name: 'sk', type: dynamo.AttributeType.STRING },
-    readCapacity: 1,
-    writeCapacity: 1,
     stream: dynamo.StreamViewType.NEW_IMAGE,
+    billingMode: dynamo.BillingMode.PAY_PER_REQUEST,
   })
   table.addGlobalSecondaryIndex({
     indexName: 'GSI1',
     partitionKey: { name: 'gsi1pk', type: dynamo.AttributeType.STRING },
     sortKey: { name: 'gsi1sk', type: dynamo.AttributeType.STRING },
-    readCapacity: 1,
-    writeCapacity: 1,
     projectionType: dynamo.ProjectionType.ALL,
   })
   table.grantReadWriteData(footwedgeApiLambda)
